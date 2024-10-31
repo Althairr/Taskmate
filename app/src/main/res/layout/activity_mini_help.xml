@@ -1,0 +1,161 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cream"
+    tools:context="MiniHelpActivity">
+
+    <!-- Title Section -->
+    <TextView
+        android:id="@+id/welcome_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selamat Datang di TaskMate!"
+        android:textSize="28sp"
+        android:textColor="@color/navy"
+        android:fontFamily="@font/montserrat_extrabold"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="80dp"/>
+
+    <!-- Section Wrapper -->
+    <LinearLayout
+        android:id="@+id/section_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="30dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@id/welcome_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Section 1: Catat Tugas -->
+        <LinearLayout
+            android:id="@+id/catat_tugas_section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal">
+
+            <!-- Icon Note -->
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/arsip" />
+
+            <!-- Title Tambahkan Tugas -->
+            <TextView
+                android:id="@+id/catat_tugas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Tambahkan Tugas"
+                android:textColor="@color/navy"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/desc_catat_tugas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Tambahkan folder tugas, judul tugas,\ndan tenggat waktu."
+            android:justificationMode="inter_word"
+            android:textColor="@color/navy"
+            android:textSize="14sp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Section 2: Pengingat Tugas -->
+        <LinearLayout
+            android:id="@+id/pengingat_tugas_section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal">
+
+            <!-- Icon Pengingat -->
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/time" />
+
+            <!-- Title Pengingat -->
+            <TextView
+                android:id="@+id/pengingat_tugas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Pengingat Tugas"
+                android:textColor="@color/navy"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/desc_pengingat_tugas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Kustomisasi pengingat tugas agar tidak terlewat."
+            android:textColor="@color/navy"
+            android:textSize="14sp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Section 3: Kalender Tugas -->
+        <LinearLayout
+            android:id="@+id/kalender_tugas_section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal">
+
+            <!-- Icon Kalender -->
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/calender" />
+
+            <!-- Title Kalender -->
+            <TextView
+                android:id="@+id/calender_tugas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Kalender Tugas"
+                android:textColor="@color/navy"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/desc_calender_tugas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Menampilkan tugas yang sudah ditambahkan dalam bentuk kalender."
+            android:textColor="@color/navy"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!-- Button Lanjutkan -->
+    <Button
+        android:id="@+id/button_continue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lanjutkan"
+        android:backgroundTint="@color/pink"
+        android:textColor="@color/white"
+        android:layout_marginTop="70dp"
+        app:layout_constraintTop_toBottomOf="@id/section_wrapper"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fontFamily="@font/montserrat_bold"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

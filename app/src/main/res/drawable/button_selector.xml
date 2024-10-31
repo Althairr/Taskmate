@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Selected state -->
+    <item android:state_selected="true" android:drawable="@drawable/rounded_button" />
+    <!-- Default (unselected) state -->
+    <item android:drawable="@drawable/outline_button" />
+</selector>

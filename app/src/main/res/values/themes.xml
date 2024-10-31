@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Taskmate" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="android:windowBackground">@color/background_color</item>
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+        <item name="colorPrimary">@color/light_red</item>
+        <item name="colorAccent">@color/navy</item>
+        <item name="buttonStyle">@style/CustomButton</item>
+
+
+        <!-- Set the inverse text color to white for selected items -->
+        <item name="android:textColorPrimaryInverse">@color/white</item>
+
+        <!-- Set the accent color for selected date circle -->
+        <item name="android:colorAccent">@color/navy</item>
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="CustomButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:background">@drawable/button_selector</item>
+        <item name="android:textColor">@color/navy</item>
+    </style>
+
+    <style name="Theme.Taskmate" parent="Base.Theme.Taskmate" />
+</resources>

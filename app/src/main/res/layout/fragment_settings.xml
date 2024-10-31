@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/cream"
+    tools:context=".SettingsFragment">
+    >
+
+    <!-- TextView untuk menampilkan email pengguna -->
+
+    <TextView
+        android:id="@+id/profile_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="53dp"
+        android:layout_marginTop="28dp"
+        android:text="User"
+        android:textColor="@color/navy"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/montserrat_bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.792"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/sejak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="183dp"
+        android:layout_marginTop="16dp"
+        android:text="Pengguna sejak 2024"
+        android:textColor="@color/light_red"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.189"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_email" />
+
+    <TextView
+        android:id="@+id/profile_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="183dp"
+        android:layout_marginTop="12dp"
+        android:text="Email pengguna"
+        android:textColor="@color/navy"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.196"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_name" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/profile_image_card"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="5dp"
+        app:cardCornerRadius="70dp"
+        app:cardElevation="15dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.11"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_image"
+            android:scaleType="centerCrop"
+            android:src="@drawable/fikri" />
+
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:fontFamily="@font/montserrat_bold"
+        android:id="@+id/btn_keluar"
+        android:layout_width="208dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="44dp"
+        android:backgroundTint="@color/light_red"
+        android:elevation="10dp"
+        android:text="Keluar Akun"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_save" />
+
+    <Button
+        android:fontFamily="@font/montserrat_bold"
+        android:id="@+id/btn_hapus_akun"
+        android:layout_width="208dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/bright_red"
+        android:elevation="10dp"
+        android:text="Hapus Akun"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_keluar" />
+
+    <ImageButton
+        android:id="@+id/profile_add"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center|bottom"
+        android:background="@drawable/round_button_background_navy"
+        android:contentDescription="Add"
+        android:elevation="20dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/add_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.12" />
+
+    <TextView
+        android:id="@+id/settings_akun"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="164dp"
+        android:text="PENGATURAN AKUN"
+        android:textColor="@color/navy"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.108"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/editTextEmail"
+        android:layout_width="322dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="252dp"
+        android:background="@drawable/rounded_text_box"
+        android:fontFamily="@font/montserrat_regular"
+        android:hint="Masukkan email"
+        android:padding="10dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:text="Email pengguna"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.456"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/nama"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="304dp"
+        android:fontFamily="@font/montserrat_semibold"
+        android:text="Nama Pengguna"
+        android:textColor="@color/navy"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.118"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editNama"
+        android:layout_width="322dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="340dp"
+        android:background="@drawable/rounded_text_box"
+        android:fontFamily="@font/montserrat_regular"
+        android:hint="Masukkan nama"
+        android:padding="10dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:text="User"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.456"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="161dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/light_red"
+        android:elevation="10dp"
+        android:text="Simpan"
+        android:fontFamily="@font/montserrat_bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editNama" />
+
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="216dp"
+        android:fontFamily="@font/montserrat_semibold"
+        android:text="Email"
+        android:textColor="@color/navy"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.075"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

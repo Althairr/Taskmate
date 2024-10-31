@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFEFD5"
+    android:padding="16dp"
+    tools:context=".TaskActivity">
+
+    <!-- Back Button -->
+    <TextView
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/batal"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/navy"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:fontFamily="@font/montserrat_bold"
+        />
+
+    <!-- Category Label -->
+    <TextView
+        android:id="@+id/categoryLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/kategori"
+        android:textColor="@color/navy"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cancelButton"
+        android:fontFamily="@font/montserrat_semibold"
+        />
+
+    <!-- Category Spinner -->
+    <Spinner
+        android:id="@+id/categorySpinner"
+        android:layout_width="345dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_edittext"
+        android:entries="@array/categories"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/montserrat_regular"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/categoryLabel"
+        />
+
+    <!-- Task Name Label -->
+    <TextView
+        android:id="@+id/namatugasLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/montserrat_semibold"
+        android:text="@string/NAMA_TUGAS"
+        android:textColor="@color/navy"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/categorySpinner"
+        />
+
+    <!-- Task Name Input -->
+    <EditText
+        android:id="@+id/taskNameInput"
+        android:layout_width="345dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="@string/HINT_NT"
+        android:fontFamily="@font/montserrat_regular"
+        android:inputType="text"
+        android:padding="12dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/namatugasLabel"
+        />
+
+    <!-- Deadline and Time Label -->
+    <TextView
+        android:id="@+id/waktutenggatLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/WAKTU_TENGGAT"
+        android:fontFamily="@font/montserrat_semibold"
+        android:textColor="@color/navy"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/taskNameInput"
+        />
+
+    <!-- Combined Date and Time Input -->
+    <TextView
+        android:id="@+id/deadlineAndTimeInput"
+        android:layout_width="345dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="@string/HINT_WT"
+        android:fontFamily="@font/montserrat_regular"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:focusable="true"
+        android:clickable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/waktutenggatLabel"
+        />
+
+    <!-- Notification Time Label -->
+    <TextView
+        android:id="@+id/waktunotifikasi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/WAKTU_NOTIFIKASI"
+        android:fontFamily="@font/montserrat_semibold"
+        android:textColor="@color/navy"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deadlineAndTimeInput"
+        />
+    <!-- Notification Time Input -->
+    <Spinner
+        android:id="@+id/notificationTimeSpinner"
+        android:layout_width="345dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_edittext"
+        android:entries="@array/notification_days"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/montserrat_regular"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/waktunotifikasi"
+        />
+
+    <!-- Submit Button -->
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="146dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="91dp"
+        android:backgroundTint="@color/coral"
+        android:text="@string/SELESAI"
+        android:fontFamily="@font/montserrat_bold"
+        android:textColor="@color/cream"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notificationTimeSpinner"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

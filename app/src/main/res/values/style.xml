@@ -1,0 +1,29 @@
+<resources>
+    <!-- Custom DatePicker Style -->
+    <style name="CustomDatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorPrimary">#FF6969</item> <!-- Change the top bar color -->
+        <item name="colorAccent">#FF6969</item> <!-- Accent color -->
+        <item name="android:datePickerDialogTheme">@style/CustomDatePickerDialog</item>
+    </style>
+
+    <!-- Custom DatePickerDialog Style -->
+    <style name="CustomDatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:background">#FFFFFF</item> <!-- Background color -->
+        <item name="colorPrimary">#FF6969</item> <!-- Change top bar color -->
+        <item name="android:textColorPrimary">#000000</item> <!-- Text color -->
+    </style>
+
+    <!-- Custom MaterialTimePicker Style -->
+    <style name="CustomMaterialTimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <!-- Apply the color scheme to the time picker -->
+        <item name="colorPrimary">#FF6969</item> <!-- Top bar color -->
+        <item name="colorAccent">#FF6969</item> <!-- Accent color (if needed) -->
+        <item name="clockFaceBackgroundColor">#FF6969</item> <!-- Clock face background color -->
+        <item name="clockHandColor">#FF6969</item> <!-- Clock hand color --><!-- Title text color -->
+    </style>
+
+    <style name="CustomButtonForget" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/coral</item> <!-- Set background tint -->
+        <item name="android:textColor">@color/white</item> <!-- Set text color -->
+    </style>
+</resources>

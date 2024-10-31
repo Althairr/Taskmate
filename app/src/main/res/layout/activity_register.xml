@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cream"
+    android:padding="30dp"
+    tools:context=".authentication.RegisterActivity">
+
+
+    <LinearLayout
+        android:layout_width="408dp"
+        android:layout_height="703dp"
+        android:orientation="vertical"
+        android:padding="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="DAFTAR"
+            android:textSize="32sp"
+            android:layout_marginBottom="40dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="@string/email"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edt_register_email"
+            android:layout_width="345dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_edittext"
+            android:fontFamily="@font/montserrat_regular"
+            android:hint="@string/masukkan_email"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="20dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="Nama Pengguna"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edt_register_username"
+            android:layout_width="345dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_edittext"
+            android:fontFamily="@font/montserrat_regular"
+            android:hint="Masukkan nama anda"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="20dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="@string/kata_sandi"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edt_register_password"
+            android:layout_width="345dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_edittext"
+            android:fontFamily="@font/montserrat_regular"
+            android:hint="@string/masukkan_kata_sandi"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_height="40dp"
+            android:layout_width="350dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/coral"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="Daftar"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:background="@drawable/rounded_edittext"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/black"
+            android:text="Sudah punya akun?"
+            android:fontFamily="@font/montserrat_regular"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/tv_to_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="@string/masuk"
+            android:textAlignment="center"
+            android:textColor="@color/coral" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
