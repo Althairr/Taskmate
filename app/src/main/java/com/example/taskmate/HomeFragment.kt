@@ -120,6 +120,8 @@ class HomeFragment : Fragment() {
         val calendar = Calendar.getInstance()
         val currentTime = DateFormat.format("HH:mm", calendar).toString()
         binding.currentTime1.text = currentTime
+
+        // TESTING PUSH
     }
 
 
