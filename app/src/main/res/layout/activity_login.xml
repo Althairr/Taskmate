@@ -9,10 +9,11 @@
     tools:context=".authentication.LoginActivity">
 
     <LinearLayout
-        android:layout_width="394dp"
-        android:layout_height="689dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="30dp"
+        android:paddingTop="30dp"
+        android:paddingBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.511"
@@ -45,7 +46,7 @@
 
         <EditText
             android:id="@+id/edt_email"
-            android:layout_width="330dp"
+            android:layout_width="match_parent"
             android:layout_gravity="center"
             android:layout_height="50dp"
             android:background="@drawable/rounded_edittext"
@@ -65,7 +66,7 @@
 
         <EditText
             android:id="@+id/edt_password"
-            android:layout_width="330dp"
+            android:layout_width="match_parent"
             android:layout_gravity="center"
             android:layout_height="50dp"
             android:background="@drawable/rounded_edittext"
@@ -88,7 +89,7 @@
         <Button
             android:id="@+id/btn_login"
             android:layout_height="40dp"
-            android:layout_width="330dp"
+            android:layout_width="match_parent"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/coral"

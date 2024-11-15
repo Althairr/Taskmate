@@ -83,6 +83,11 @@ class RegisterActivity : AppCompatActivity() {
                     // Get the current user ID
                     val userId = auth.currentUser?.uid
 
+                    if (userId == null) {
+                        Toast.makeText(this, "Error: User ID is null", Toast.LENGTH_SHORT).show()
+                        return@addOnCompleteListener
+                    }
+
                     // Prepare the user data
                     val user = hashMapOf(
                         "userId" to userId,
@@ -91,19 +96,17 @@ class RegisterActivity : AppCompatActivity() {
                     )
 
                     // Save user data to Firestore
-                    userId?.let {
-                        firestore.collection("users").document(it).set(user)
-                            .addOnCompleteListener { dbTask ->
-                                if (dbTask.isSuccessful) {
-                                    Toast.makeText(this, "Berhasil daftar!", Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(this, LoginActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
-                                } else {
-                                    Toast.makeText(this, "Gagal menyimpan data pengguna: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
-                                }
+                    firestore.collection("users").document(userId).set(user)
+                        .addOnCompleteListener { dbTask ->
+                            if (dbTask.isSuccessful) {
+                                Toast.makeText(this, "Berhasil daftar!", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this, LoginActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                Toast.makeText(this, "Gagal menyimpan data pengguna: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
                             }
-                    }
+                        }
                 } else {
                     Toast.makeText(this, "${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }

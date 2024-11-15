@@ -134,7 +134,7 @@ class SettingsFragment : Fragment() {
 
         // Create a map of the data to be saved
         val data = mutableMapOf<String, Any>()
-        nickname?.let { data["nickname"] = it }
+        nickname?.let { data["username"] = it }
         profileImageUrl?.let { data["profileImageUrl"] = it }
 
         // Use SetOptions.merge() to ensure data is merged rather than overwritten
