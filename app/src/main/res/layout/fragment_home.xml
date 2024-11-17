@@ -181,6 +181,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/day_1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -191,6 +192,7 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/day_2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -201,6 +203,7 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/day_3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -211,6 +214,7 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/day_4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -221,6 +225,7 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/day_5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -231,6 +236,7 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/day_6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -241,6 +247,7 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/day_7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -262,19 +269,20 @@
         android:background="@drawable/rounded_box"
         android:clickable="true"
         android:focusable="true"
+        android:minHeight="180dp"
         android:padding="15dp"
         app:layout_constraintTop_toBottomOf="@+id/calendar_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Judul Informasi -->
+        <!-- Title -->
         <TextView
             android:id="@+id/information_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:fontFamily="@font/montserrat_bold"
-            android:text="INFORMASI\nBERANDA"
+            android:text="BERANDA"
             android:textSize="16sp"
             android:textColor="@color/navy"
             android:layout_marginBottom="8dp"
@@ -291,37 +299,34 @@
             android:background="@color/navy"
             app:layout_constraintTop_toBottomOf="@+id/information_title" />
 
-        <!-- Teks Informasi -->
+        <!-- Content Text -->
         <TextView
             android:id="@+id/information_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_regular"
-            android:text="Beranda aplikasi menampilkan daftar tugas yang diurutkan berdasarkan tanggal tenggat waktu terdekat. Saat ditekan..."
+            android:text="Beranda aplikasi menampilkan daftar tugas..."
             android:textSize="14sp"
             android:textColor="@color/navy"
-            android:maxLines="3"
+            android:maxLines="7"
             android:justificationMode="inter_word"
             android:ellipsize="end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider_line" />
 
-        <!-- Carousel Indicator -->
+        <!-- Carousel Indicators -->
         <LinearLayout
             android:id="@+id/carousel_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:layout_gravity="center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/information_text">
 
-            <!-- Empty Circle (not active slide) -->
             <ImageView
                 android:id="@+id/indicator_1"
                 android:layout_width="8dp"
@@ -329,7 +334,6 @@
                 android:layout_marginHorizontal="4dp"
                 android:src="@drawable/filled_circle" />
 
-            <!-- Filled Circle (active slide) -->
             <ImageView
                 android:id="@+id/indicator_2"
                 android:layout_width="8dp"
@@ -337,7 +341,6 @@
                 android:layout_marginHorizontal="4dp"
                 android:src="@drawable/empty_circle" />
 
-            <!-- Empty Circle (not active slide) -->
             <ImageView
                 android:id="@+id/indicator_3"
                 android:layout_width="8dp"
@@ -360,6 +363,7 @@
                 android:src="@drawable/empty_circle" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <!-- end of information box -->
 
 
