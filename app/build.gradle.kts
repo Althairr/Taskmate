@@ -73,4 +73,11 @@ dependencies {
     implementation("com.google.firebase:firebase-database-ktx:21.0.0")
     implementation("com.google.firebase:firebase-storage-ktx:21.0.1")
 
+    // Caraousel Information Box Home
+    implementation ("androidx.viewpager2:viewpager2:1.0.0")
+    implementation ("com.tbuonomo:dotsindicator:4.3")
+
+    // Day Date Home
+    implementation ("com.jakewharton.threetenabp:threetenabp:1.4.4")
+
 }
