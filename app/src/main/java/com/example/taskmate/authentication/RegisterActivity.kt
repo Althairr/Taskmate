@@ -8,19 +8,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.taskmate.databinding.ActivityRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterActivity : AppCompatActivity() {
 
-    lateinit private var auth : FirebaseAuth
-    lateinit private var binding : ActivityRegisterBinding
+    private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityRegisterBinding
+    private val firestore = FirebaseFirestore.getInstance() // Initialize Firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -33,60 +29,49 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.btnRegister.setOnClickListener{
+        binding.btnRegister.setOnClickListener {
             val email = binding.edtRegisterEmail.text.toString()
             val password = binding.edtRegisterPassword.text.toString()
             val username = binding.edtRegisterUsername.text.toString()
 
-            // Ensure that the user has email
-            if (email.isEmpty())
-            {
+            // Validate input fields
+            if (email.isEmpty()) {
                 binding.edtRegisterEmail.error = "Email harus diisi"
                 binding.edtRegisterEmail.requestFocus()
                 return@setOnClickListener
             }
 
-            // Validate if email matches or not
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches())
-            {
-                binding.edtRegisterPassword.error = "Email tidak valid"
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                binding.edtRegisterEmail.error = "Email tidak valid"
                 binding.edtRegisterEmail.requestFocus()
                 return@setOnClickListener
             }
 
-            // Ensure that the user has password
-            if (password.isEmpty())
-            {
+            if (password.isEmpty()) {
                 binding.edtRegisterPassword.error = "Password harus diisi"
                 binding.edtRegisterPassword.requestFocus()
                 return@setOnClickListener
             }
 
-            // Ensure that the password is valid
-            if (password.length < 6)
-            {
+            if (password.length < 6) {
                 binding.edtRegisterPassword.error = "Panjang password minimal 6 karakter"
                 binding.edtRegisterPassword.requestFocus()
                 return@setOnClickListener
             }
 
-            // Handle the username
-            if (username.isEmpty())
-            {
-                binding.edtRegisterEmail.error = "Nama harus diisi"
-                binding.edtRegisterEmail.requestFocus()
+            if (username.isEmpty()) {
+                binding.edtRegisterUsername.error = "Nama harus diisi"
+                binding.edtRegisterUsername.requestFocus()
                 return@setOnClickListener
             }
 
-            // Ensure that the username only consists of alphabet
             if (username.any { it.isDigit() }) {
-                binding.edtRegisterEmail.error = "Nama tidak boleh ada angka"
-                binding.edtRegisterEmail.requestFocus()
+                binding.edtRegisterUsername.error = "Nama tidak boleh ada angka"
+                binding.edtRegisterUsername.requestFocus()
                 return@setOnClickListener
             }
 
-
-            // Handle the firebase register
+            // Handle Firebase register
             registerFirebase(email, username, password)
         }
     }
@@ -95,30 +80,36 @@ class RegisterActivity : AppCompatActivity() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Get the current user id
+                    // Get the current user ID
                     val userId = auth.currentUser?.uid
 
-                    // Prepare
-                    val user = User(userId, username, email) // Asumsikan Anda memiliki kelas User
-
-                    // Save to database
-                    val database = FirebaseDatabase.getInstance().getReference("users")
-                    userId?.let {
-                        database.child(it).setValue(user)
-                            .addOnCompleteListener { dbTask ->
-                                if (dbTask.isSuccessful) {
-                                    Toast.makeText(this, "Berhasil daftar!", Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(this, LoginActivity::class.java)
-                                    startActivity(intent)
-                                } else {
-                                    Toast.makeText(this, "Gagal menyimpan data pengguna: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                    if (userId == null) {
+                        Toast.makeText(this, "Error: User ID is null", Toast.LENGTH_SHORT).show()
+                        return@addOnCompleteListener
                     }
+
+                    // Prepare the user data
+                    val user = hashMapOf(
+                        "userId" to userId,
+                        "username" to username,
+                        "email" to email
+                    )
+
+                    // Save user data to Firestore
+                    firestore.collection("users").document(userId).set(user)
+                        .addOnCompleteListener { dbTask ->
+                            if (dbTask.isSuccessful) {
+                                Toast.makeText(this, "Berhasil daftar!", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this, LoginActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                Toast.makeText(this, "Gagal menyimpan data pengguna: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                 } else {
                     Toast.makeText(this, "${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
-
 }
