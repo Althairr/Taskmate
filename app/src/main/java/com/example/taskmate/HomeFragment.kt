@@ -297,26 +297,43 @@ class HomeFragment : Fragment() {
                 Log.d("HomeFragment", "Documents count: ${querySnapshot.size()}")
 
                 groupedItems.clear()
-                val taskMap = mutableMapOf<String, MutableList<TaskItem>>()
+                val taskMap = mutableMapOf<String, MutableMap<String, MutableList<TaskItem>>>()
 
                 for (taskDocument in querySnapshot.documents) {
                     val deadlineAndTime = taskDocument.getString("deadlineAndTime")
                     val taskName = taskDocument.getString("taskName")
+                    val category = taskDocument.getString("category") // Assuming category is a field in Firestore
 
-                    if (deadlineAndTime != null && taskName != null) {
+                    if (deadlineAndTime != null && taskName != null && category != null) {
                         val (time, date) = splitDate(deadlineAndTime)
                         val taskItem = TaskItem(taskName, time)
 
+                        // Group by date first, then by category
                         if (taskMap[date] == null) {
-                            taskMap[date] = mutableListOf()
+                            taskMap[date] = mutableMapOf()
                         }
-                        taskMap[date]?.add(taskItem)
+
+                        if (taskMap[date]?.get(category) == null) {
+                            taskMap[date]?.put(category, mutableListOf())
+                        }
+
+                        taskMap[date]?.get(category)?.add(taskItem)
                     }
                 }
 
-                for ((date, tasks) in taskMap) {
+                // Now display: Group by date first, then category within that date
+                for ((date, categoryMap) in taskMap) {
+                    // Add the date header
                     groupedItems.add(DateHeader(date))
-                    groupedItems.addAll(tasks)
+
+                    // For each category within this date, add the category header
+                    for ((category, tasks) in categoryMap) {
+                        // Add the category header
+                        groupedItems.add(CategoryHeader(category))
+
+                        // Add the tasks for this category
+                        groupedItems.addAll(tasks)
+                    }
                 }
 
                 adapter.notifyDataSetChanged()
@@ -332,6 +349,7 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
 
     private fun splitDate(deadlineAndTime: String): Pair<String, String> {
         val parts = deadlineAndTime.split(", ")
