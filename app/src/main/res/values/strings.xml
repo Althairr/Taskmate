@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Taskmate</string>
     <string-array name="categories">
-        <item>Semua</item>
+        <item>Tidak dikategorikan</item>
     </string-array>
 
     <string-array name="notification_days">
+        <item>1 hari</item>
         <item>3 hari</item>
         <item>5 hari</item>
         <item>7 hari</item>

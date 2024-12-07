@@ -64,12 +64,12 @@ class TaskActivity : AppCompatActivity() {
                     document.getString("name")?.let { categories.add(it) }
                 }
 
-                // Pastikan "Semua" selalu ada di posisi pertama
-                if (!categories.contains("Semua")) {
-                    categories.add(0, "Semua")
+                // Pastikan "Tidak dikategorikan" selalu ada di posisi pertama
+                if (!categories.contains("Tidak dikategorikan")) {
+                    categories.add(0, "Tidak dikategorikan")
                 } else {
-                    categories.remove("Semua")
-                    categories.add(0, "Semua")
+                    categories.remove("Tidak dikategorikan")
+                    categories.add(0, "Tidak dikategorikan")
                 }
 
                 // Pastikan "Add Category" selalu ada di posisi terakhir
@@ -81,7 +81,7 @@ class TaskActivity : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.e("Firestore", "Error getting documents: ", exception)
                 categories.clear()
-                categories.add("Semua")
+                categories.add("Tidak dikategorikan")
                 categories.add("Add Category")
                 setupCategorySpinner()
             }
@@ -92,8 +92,8 @@ class TaskActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         categorySpinner.adapter = adapter
 
-        // Set "Semua" as the default selection if it exists in the list
-        val defaultIndex = categories.indexOf("Semua")
+        // Set "Tidak dikategorikan" as the default selection if it exists in the list
+        val defaultIndex = categories.indexOf("Tidak dikategorikan")
         if (defaultIndex != -1) {
             categorySpinner.setSelection(defaultIndex)
         }
@@ -124,7 +124,7 @@ class TaskActivity : AppCompatActivity() {
             }
         }
         builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
-        val defaultIndex = categories.indexOf("Semua")
+        val defaultIndex = categories.indexOf("Tidak dikategorikan")
         if (defaultIndex != -1) {
             categorySpinner.setSelection(defaultIndex)
         }
@@ -220,7 +220,8 @@ class TaskActivity : AppCompatActivity() {
                 "category" to category,
                 "taskName" to taskName,
                 "deadlineAndTime" to deadlineAndTime,
-                "time" to time
+                "time" to time,
+                "status" to false // Tugas baru belum selesai
             )
 
             firestore.collection("tasks")
@@ -234,4 +235,5 @@ class TaskActivity : AppCompatActivity() {
                 }
         }
     }
+
 }

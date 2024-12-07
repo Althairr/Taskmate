@@ -1,10 +1,15 @@
 package com.example.taskmate
 
+import android.graphics.Paint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class GroupedTaskAdapter(private val items: List<ListItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -67,13 +72,63 @@ class GroupedTaskAdapter(private val items: List<ListItem>) : RecyclerView.Adapt
     }
 
     // ViewHolder for TaskItem
-    class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val taskNameTextView: TextView = view.findViewById(R.id.tv_task)
-        private val taskTimeTextView: TextView = view.findViewById(R.id.tv_time)
+    inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val taskName: TextView = itemView.findViewById(R.id.tv_task)
+        private val taskTime: TextView = itemView.findViewById(R.id.tv_time)
+        private val statusCheckBox: CheckBox = itemView.findViewById(R.id.statusCheckBox)
 
         fun bind(taskItem: TaskItem) {
-            taskNameTextView.text = taskItem.taskName
-            taskTimeTextView.text = taskItem.time
+            taskName.text = taskItem.name
+            taskTime.text = taskItem.time
+            statusCheckBox.isChecked = taskItem.isCompleted
+
+            // Apply strike-through line if task is completed
+            if (taskItem.isCompleted) {
+                taskName.paintFlags = taskName.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            } else {
+                taskName.paintFlags = taskName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            }
+
+            // Update Firestore when checkbox status changes
+            statusCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                taskItem.isCompleted = isChecked
+                updateTaskStatusInFirestore(taskItem)
+
+                // Apply strike-through line when checked
+                if (isChecked) {
+                    taskName.paintFlags = taskName.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                } else {
+                    taskName.paintFlags = taskName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                }
+            }
         }
+    }
+
+    private fun updateTaskStatusInFirestore(taskItem: TaskItem) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null) {
+            Log.e("HomeFragment", "User not authenticated")
+            return
+        }
+
+        val db = FirebaseFirestore.getInstance().collection("tasks")
+        db.whereEqualTo("userId", userId)
+            .whereEqualTo("taskName", taskItem.name) // Match the task by name
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot.documents) {
+                    db.document(document.id)
+                        .update("status", taskItem.isCompleted)
+                        .addOnSuccessListener {
+                            Log.d("HomeFragment", "Task status updated successfully.")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("HomeFragment", "Failed to update task status.", e)
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("HomeFragment", "Failed to fetch task for update.", e)
+            }
     }
 }

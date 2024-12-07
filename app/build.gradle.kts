@@ -86,4 +86,7 @@ dependencies {
     // Day Date Home
     implementation ("com.jakewharton.threetenabp:threetenabp:1.4.4")
 
+    // App Check
+    implementation ("com.google.firebase:firebase-appcheck-playintegrity:17.0.1")
+
 }

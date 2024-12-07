@@ -16,11 +16,15 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.taskmate.databinding.FragmentHomeBinding
 import java.util.Calendar
 import com.example.taskmate.carousel.CarouselItem
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -302,11 +306,19 @@ class HomeFragment : Fragment() {
                 for (taskDocument in querySnapshot.documents) {
                     val deadlineAndTime = taskDocument.getString("deadlineAndTime")
                     val taskName = taskDocument.getString("taskName")
-                    val category = taskDocument.getString("category") // Assuming category is a field in Firestore
+                    val category = taskDocument.getString("category")
+                    val isCompleted = taskDocument.getBoolean("status") ?: false
 
                     if (deadlineAndTime != null && taskName != null && category != null) {
                         val (time, date) = splitDate(deadlineAndTime)
-                        val taskItem = TaskItem(taskName, time)
+
+                        // Check if the task is already past the deadline
+                        if (isTaskPastDeadline(date)) {
+                            // Skip tasks that are past the deadline
+                            continue
+                        }
+
+                        val taskItem = TaskItem(taskName, time, isCompleted)
 
                         // Group by date first, then by category
                         if (taskMap[date] == null) {
@@ -347,6 +359,18 @@ class HomeFragment : Fragment() {
                     binding.taskRecyclerView.visibility = View.VISIBLE
                 }
             }
+        }
+    }
+
+    private fun isTaskPastDeadline(deadline: String): Boolean {
+        val dateFormat = SimpleDateFormat("HH:mm, d MMMM yyyy", Locale.getDefault())
+        return try {
+            val taskDeadline = dateFormat.parse(deadline) // Parse tanggal dari string
+            val currentDate = Date() // Tanggal saat ini
+            taskDeadline != null && taskDeadline.before(currentDate) // Bandingkan
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false // Jika parsing gagal, anggap tidak melewati batas waktu
         }
     }
 
