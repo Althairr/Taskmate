@@ -1,5 +1,6 @@
 package com.example.taskmate
 
+import android.content.Intent
 import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
@@ -89,6 +90,14 @@ class GroupedTaskAdapter(private val items: List<ListItem>) : RecyclerView.Adapt
                 taskName.paintFlags = taskName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
             }
 
+            // Set OnClickListener for task name to navigate to EditTaskActivity
+            taskName.setOnClickListener {
+                val context = itemView.context
+                val intent = Intent(context, EditTaskActivity::class.java)
+                intent.putExtra("taskId", taskItem.id) // Pass task ID to EditTaskActivity
+                context.startActivity(intent)
+            }
+
             // Update Firestore when checkbox status changes
             statusCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 taskItem.isCompleted = isChecked
@@ -103,6 +112,7 @@ class GroupedTaskAdapter(private val items: List<ListItem>) : RecyclerView.Adapt
             }
         }
     }
+
 
     private fun updateTaskStatusInFirestore(taskItem: TaskItem) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid

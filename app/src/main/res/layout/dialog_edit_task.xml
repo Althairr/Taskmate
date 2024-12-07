@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFEFD5"
+    android:padding="16dp"
+    tools:context=".TaskActivity">
+
+    <!-- Back Button -->
+    <TextView
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/batal"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/navy"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:fontFamily="@font/montserrat_bold" />
+
+    <!-- Category Label -->
+    <TextView
+        android:id="@+id/categoryLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/kategori"
+        android:textColor="@color/navy"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cancelButton"
+        android:fontFamily="@font/montserrat_semibold" />
+
+    <!-- Category Spinner -->
+    <Spinner
+        android:id="@+id/categorySpinner"
+        android:layout_width="345dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_edittext"
+        android:entries="@array/categories"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/montserrat_regular"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/categoryLabel" />
+
+    <!-- Task Name Label -->
+    <TextView
+        android:id="@+id/namatugasLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/NAMA_TUGAS"
+        android:textColor="@color/navy"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/categorySpinner"
+        android:fontFamily="@font/montserrat_semibold" />
+
+    <!-- Task Name Input -->
+    <EditText
+        android:id="@+id/taskNameInput"
+        android:layout_width="345dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="@string/HINT_NT"
+        android:fontFamily="@font/montserrat_regular"
+        android:inputType="text"
+        android:padding="12dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/namatugasLabel" />
+
+    <!-- Deadline and Time Label -->
+    <TextView
+        android:id="@+id/waktutenggatLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/WAKTU_TENGGAT"
+        android:textColor="@color/navy"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/taskNameInput"
+        android:fontFamily="@font/montserrat_semibold" />
+
+    <!-- Combined Date and Time Input -->
+    <TextView
+        android:id="@+id/deadlineAndTimeInput"
+        android:layout_width="345dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="@string/HINT_WT"
+        android:fontFamily="@font/montserrat_regular"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:focusable="true"
+        android:clickable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/waktutenggatLabel" />
+
+    <!-- Notification Time Label -->
+    <TextView
+        android:id="@+id/waktunotifikasi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/WAKTU_NOTIFIKASI"
+        android:textColor="@color/navy"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deadlineAndTimeInput"
+        android:fontFamily="@font/montserrat_semibold" />
+
+    <!-- Notification Time Input -->
+    <Spinner
+        android:id="@+id/notificationTimeSpinner"
+        android:layout_width="345dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_edittext"
+        android:entries="@array/notification_days"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/montserrat_regular"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/waktunotifikasi"
+        />
+
+    <!-- Hapus dan Perbarui (TextView sejajar) -->
+    <LinearLayout
+        android:layout_marginTop="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notificationTimeSpinner"
+        android:gravity="center">
+
+        <!-- Hapus -->
+        <TextView
+            android:id="@+id/deleteText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hapus"
+            android:textSize="16sp"
+            android:paddingEnd="32dp"
+            android:fontFamily="@font/montserrat_bold"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Perbarui -->
+        <TextView
+            android:id="@+id/updateText"
+            android:layout_width="99dp"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="Perbarui"
+            android:textColor="@color/navy"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

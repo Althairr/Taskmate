@@ -24,6 +24,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Taskmate"
         tools:targetApi="31">
+        <activity android:name=".EditTaskActivity">
+        </activity>
         <activity
             android:name=".SplashActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
