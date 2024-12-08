@@ -6,6 +6,15 @@
         <item name="android:datePickerDialogTheme">@style/CustomDatePickerDialog</item>
     </style>
 
+     <!-- Custom Kalender Arsip -->
+    <style name="CustomCalendarViewTheme" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">@color/coral</item>
+        <item name="colorAccent">@color/coral</item>
+        <item name="colorControlActivated">@color/coral</item>
+        <item name="android:textColorPrimary">@color/navy</item>
+        <item name="android:textColorSecondary">@color/navy</item>
+    </style>
+
     <!-- Custom DatePickerDialog Style -->
     <style name="CustomDatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="android:background">#FFFFFF</item> <!-- Background color -->
