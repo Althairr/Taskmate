@@ -33,7 +33,7 @@
         android:id="@+id/greeting_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="120dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/montserrat_bold"
         android:text="Halo, User"
@@ -47,14 +47,13 @@
         android:id="@+id/current_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/montserrat_bold"
         android:text="09:30"
         android:textColor="@color/light_red"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/greeting_text" />
+        app:layout_constraintTop_toTopOf="@id/imageViewProfile" />
 
     <!-- Divider Line -->
     <View
@@ -63,45 +62,63 @@
         android:layout_height="2dp"
         android:layout_marginTop="20dp"
         android:background="@color/navy"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_time" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewProfile" />
 
-    <!-- Category Container (Horizontal Scroll) -->
+    <!-- Category Container (Horizontal ScrollView) with Hamburger -->
+
+    <!-- Task List Container (Vertical ScrollView) -->
     <LinearLayout
-        android:id="@+id/categoryContainer"
+        android:id="@+id/categoryLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:orientation="horizontal"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view">
 
-        <!-- Horizontal Scroll View for Buttons -->
+        <!-- Horizontal Scrollable Categories -->
         <HorizontalScrollView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:scrollbars="none">
 
             <LinearLayout
-                android:id="@+id/categoryButtonLayout"
+                android:id="@+id/categoryContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" />
         </HorizontalScrollView>
+
+        <!-- Hamburger Menu Icon -->
+        <ImageView
+            android:id="@+id/hamburger_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="10dp"
+            android:src="@drawable/hamburger" />
     </LinearLayout>
 
-    <!-- Task List Container -->
+    <!-- ScrollView for Task List -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/categoryLayout"
+        app:layout_constraintBottom_toBottomOf="parent"> <!-- Constrained to the bottom of the parent -->
+
     <LinearLayout
         android:id="@+id/taskContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/categoryContainer" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:padding="16dp" />
+</ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>

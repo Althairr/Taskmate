@@ -13,6 +13,11 @@ class KategoriAdapter(
     private val onMoreClick: (View, Int) -> Unit
 ) : RecyclerView.Adapter<KategoriAdapter.KategoriViewHolder>() {
 
+    // Add a public getter for categories
+    fun getCategories(): List<String> {
+        return categories
+    }
+
     class KategoriViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val categoryName: TextView = view.findViewById(R.id.kategori_name)
         val moreIcon: ImageView = view.findViewById(R.id.more_vert)
@@ -37,3 +42,4 @@ class KategoriAdapter(
         return categories.size
     }
 }
+

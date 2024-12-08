@@ -6,40 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".kategori.KategoriActivity">
 
-    <!-- Cancel / Back Text -->
-
-    <!-- Main Title -->
+    <!-- Back Text Button -->
     <TextView
         android:id="@+id/batal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="Batal"
         android:textColor="@color/navy"
         android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.044"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.95"
+        android:layout_marginTop="16dp" />
 
+    <!-- Title -->
     <TextView
         android:id="@+id/kelola"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="76dp"
         android:text="KELOLA KATEGORI"
         android:textColor="@color/navy"
         android:textSize="32sp"
+        app:layout_constraintTop_toBottomOf="@id/batal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="20dp" />
 
     <!-- RecyclerView for Category List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_categories"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/kelola"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="25dp"
         tools:listitem="@layout/kategori_item" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
