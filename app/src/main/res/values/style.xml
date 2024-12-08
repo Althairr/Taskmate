@@ -13,6 +13,15 @@
         <item name="android:textColorPrimary">#000000</item> <!-- Text color -->
     </style>
 
+    <!-- Custom Kalender Arsip -->
+    <style name="CustomCalendarViewTheme" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">@color/coral</item>
+        <item name="colorAccent">@color/coral</item>
+        <item name="colorControlActivated">@color/coral</item>
+        <item name="android:textColorPrimary">@color/navy</item>
+        <item name="android:textColorSecondary">@color/navy</item>
+    </style>
+
     <!-- Custom MaterialTimePicker Style -->
     <style name="CustomMaterialTimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
         <!-- Apply the color scheme to the time picker -->

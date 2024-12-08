@@ -124,10 +124,6 @@ class TaskActivity : AppCompatActivity() {
             }
         }
         builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
-        val defaultIndex = categories.indexOf("Tidak dikategorikan")
-        if (defaultIndex != -1) {
-            categorySpinner.setSelection(defaultIndex)
-        }
         builder.show()
     }
 
@@ -155,7 +151,6 @@ class TaskActivity : AppCompatActivity() {
                 Toast.makeText(this, "Gagal menambahkan kategori", Toast.LENGTH_SHORT).show()
             }
     }
-
 
     private fun openDatePicker() {
         val datePickerDialog = DatePickerDialog(
@@ -215,13 +210,21 @@ class TaskActivity : AppCompatActivity() {
         if (taskName.isEmpty() || deadlineAndTime == "Pilih tanggal dan waktu") {
             Toast.makeText(this, "Harap isi semua kolom", Toast.LENGTH_SHORT).show()
         } else {
+            val deadlineDate = String.format(
+                "%d %s %d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()),
+                calendar.get(Calendar.YEAR)
+            )
+
             val taskData = mapOf(
                 "userId" to userId,
                 "category" to category,
                 "taskName" to taskName,
                 "deadlineAndTime" to deadlineAndTime,
                 "time" to time,
-                "status" to false // Tugas baru belum selesai
+                "status" to false, // Tugas baru belum selesai
+                "deadlineDate" to deadlineDate // Menyimpan hanya tanggal
             )
 
             firestore.collection("tasks")
@@ -235,5 +238,4 @@ class TaskActivity : AppCompatActivity() {
                 }
         }
     }
-
 }

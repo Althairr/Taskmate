@@ -1,59 +1,110 @@
 package com.example.taskmate
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CalendarView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CalenderFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CalenderFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var taskAdapter: CalendarTaskAdapter
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var calendarView: CalendarView
+    private lateinit var emptyMessage: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calender, container, false)
+        val view = inflater.inflate(R.layout.fragment_calender, container, false)
+
+        // Initialize RecyclerView and Adapter
+        recyclerView = view.findViewById(R.id.calenderTaskRecyclerView)
+        taskAdapter = CalendarTaskAdapter(emptyList())
+        recyclerView.adapter = taskAdapter
+
+        // Initialize Empty Message TextView
+        emptyMessage = view.findViewById(R.id.emptyMessage)
+        emptyMessage.visibility = View.GONE // Initially hide empty message
+
+        // Set LayoutManager for RecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        // Initialize CalendarView
+        calendarView = view.findViewById(R.id.calendarView)
+
+        // Set OnDateChangeListener to get selected date
+        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+            val selectedCalendar = Calendar.getInstance().apply {
+                set(year, month, dayOfMonth)
+            }
+
+            // Format selected date as "d MMMM yyyy"
+            val dateFormat = SimpleDateFormat("d MMMM yyyy", Locale("id", "ID"))
+            val selectedDate = dateFormat.format(selectedCalendar.time).trim()
+
+            Log.d("CalendarFragment", "Selected Date: $selectedDate")
+
+            // Fetch tasks for the selected date
+            fetchTasksForSelectedDate(selectedDate)
+        }
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CalenderFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CalenderFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun fetchTasksForSelectedDate(selectedDate: String) {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Toast.makeText(context, "Silakan masuk untuk melihat tugas", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val userId = user.uid
+        val db = FirebaseFirestore.getInstance()
+
+        val tasksRef = db.collection("tasks")
+        tasksRef.whereEqualTo("userId", userId)
+            .whereEqualTo("deadlineDate", selectedDate.trim())
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    val groupedTasks = mutableListOf<Pair<String, List<CalenderTask>>>()  // List to hold grouped data
+
+                    if (snapshot != null && !snapshot.isEmpty) {
+                        // Group tasks by category
+                        val taskMap = snapshot.documents
+                            .map { it.toObject(CalenderTask::class.java)!! }
+                            .groupBy { it.category }
+
+                        // Create a list of pairs (category, tasks for that category)
+                        taskMap.forEach { (category, taskList) ->
+                            groupedTasks.add(Pair(category, taskList))  // Add category and task list as pair
+                        }
+
+                        // Update the adapter with the grouped tasks
+                        recyclerView.visibility = View.VISIBLE
+                        emptyMessage.visibility = View.GONE
+                        taskAdapter.updateTasks(groupedTasks)
+                    } else {
+                        recyclerView.visibility = View.GONE
+                        emptyMessage.visibility = View.VISIBLE
+                    }
+                } else {
+                    recyclerView.visibility = View.GONE
+                    emptyMessage.visibility = View.VISIBLE
                 }
             }
     }
+
 }
