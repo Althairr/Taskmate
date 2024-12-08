@@ -21,6 +21,7 @@
         android:fontFamily="@font/montserrat_bold"
         android:textColor="@color/navy"
         android:textSize="16sp"
+        android:theme="@style/CustomCalendarViewTheme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
