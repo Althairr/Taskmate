@@ -2,36 +2,30 @@ package com.example.taskmate
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import androidx.fragment.app.Fragment
-import androidx.activity.result.contract.ActivityResultContracts
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.example.taskmate.databinding.FragmentSettingsBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import java.util.*
-import com.example.taskmate.authentication.LoginActivity
-import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.bumptech.glide.Glide
+import com.example.taskmate.authentication.LoginActivity
 
 class SettingsFragment : Fragment() {
     private lateinit var binding: FragmentSettingsBinding
     private val auth = FirebaseAuth.getInstance()
-    private val database = FirebaseDatabase.getInstance().getReference("users")
-    private val firestore = FirebaseFirestore.getInstance() // Initialize Firestor
+    private val firestore = FirebaseFirestore.getInstance()
 
     private var imageUri: Uri? = null
 
@@ -39,26 +33,27 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
-        return binding.root // Ensure this returns the inflated view
+        return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Find the button by its ID
-        val btnHapusAkun = view.findViewById<Button>(R.id.btn_hapus_akun)
-        val btnKeluar = view.findViewById<Button>(R.id.btn_keluar)
+        // Initialize button actions
+        setupButtonActions()
 
-        // Set click listeners for both the ImageView and ImageButton
+        // Display user data
+        displayUserData()
+    }
+
+    private fun setupButtonActions() {
         binding.profileImage.setOnClickListener {
             checkStoragePermissionAndOpenGallery()
         }
+
         binding.profileAdd.setOnClickListener {
             checkStoragePermissionAndOpenGallery()
         }
-
-        displayUserData()
 
         binding.btnSave.setOnClickListener {
             val nickname = binding.editNama.text.toString().trim()
@@ -69,28 +64,51 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        btnKeluar.setOnClickListener {
+        binding.btnKeluar.setOnClickListener {
             logoutUser()
         }
 
-        btnHapusAkun.setOnClickListener {
+        binding.btnHapusAkun.setOnClickListener {
             showDeleteConfirmationDialog()
         }
     }
 
-    private fun showDeleteConfirmationDialog() {
-        // Create and show an AlertDialog to confirm account deletion
-        AlertDialog.Builder(requireContext())
-            .setTitle("Konfirmasi Hapus Akun")
-            .setMessage("Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak dapat diurungkan.")
-            .setPositiveButton("Ya") { dialog, _ ->
-                dialog.dismiss()
-                deleteUserAccount()
+    private fun displayUserData() {
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            binding.profileEmail.text = "Email tidak tersedia"
+            binding.editTextEmail.setText("Email tidak tersedia")
+            return
+        }
+
+        // Load user data from Firestore
+        firestore.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val nickname = document.getString("username")
+                    val profileImageUrl = document.getString("profileImageUrl")
+
+                    // Set nickname and profile image safely
+                    binding.profileName.text = nickname ?: "Nama tidak tersedia"
+                    binding.editNama.setText(nickname ?: "Nama tidak tersedia")
+                    profileImageUrl?.let { safeLoadProfileImage(it) }
+                } else {
+                    binding.profileName.text = "Nama tidak tersedia"
+                    binding.editNama.setText("Nama tidak tersedia")
+                }
             }
-            .setNegativeButton("Tidak") { dialog, _ ->
-                dialog.dismiss()
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Gagal memuat data pengguna.", Toast.LENGTH_SHORT).show()
             }
-            .show()
+    }
+
+    private fun safeLoadProfileImage(imageUrl: String) {
+        if (isAdded && activity != null) { // Ensure the Fragment is attached
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.fikri) // Optional placeholder
+                .into(binding.profileImage)
+        }
     }
 
     private fun checkStoragePermissionAndOpenGallery() {
@@ -121,23 +139,19 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    /// Save profile image URI to Firestore
     private fun uploadProfileImage() {
         imageUri?.let { uri ->
             updateUserData(profileImageUrl = uri.toString())
         }
     }
 
-    // Combined function to update nickname or profile image URL
     private fun updateUserData(nickname: String? = null, profileImageUrl: String? = null) {
         val userId = auth.currentUser?.uid ?: return
 
-        // Create a map of the data to be saved
         val data = mutableMapOf<String, Any>()
         nickname?.let { data["username"] = it }
         profileImageUrl?.let { data["profileImageUrl"] = it }
 
-        // Use SetOptions.merge() to ensure data is merged rather than overwritten
         firestore.collection("users").document(userId).set(data, SetOptions.merge())
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Data pengguna diperbarui.", Toast.LENGTH_SHORT).show()
@@ -151,46 +165,6 @@ class SettingsFragment : Fragment() {
             }
     }
 
-    private fun displayUserData() {
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            binding.profileEmail.text = "Email tidak tersedia"
-            binding.editTextEmail.setText("Email tidak tersedia")
-            return
-        }
-
-        // Load email
-        binding.profileEmail.text = auth.currentUser?.email ?: "Email tidak tersedia"
-        binding.editTextEmail.setText(auth.currentUser?.email ?: "Email tidak tersedia")
-
-        // Load user data from Firestore
-        firestore.collection("users").document(userId).get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val nickname = document.getString("username")
-                    val profileImageUrl = document.getString("profileImageUrl")
-
-                    // Set nickname and profile image
-                    binding.profileName.text = nickname ?: "Nama tidak tersedia"
-                    binding.editNama.setText(nickname ?: "Nama tidak tersedia")
-                    profileImageUrl?.let { loadProfileImage(it) }
-                } else {
-                    binding.profileName.text = "Nama tidak tersedia"
-                    binding.editNama.setText("Nama tidak tersedia")
-                }
-            }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Gagal memuat data pengguna.", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun loadProfileImage(imageUrl: String) {
-        Glide.with(this)
-            .load(imageUrl)
-            .placeholder(R.drawable.fikri) // Optional placeholder
-            .into(binding.profileImage)
-    }
-
     private fun logoutUser() {
         auth.signOut()
         val intent = Intent(requireContext(), LoginActivity::class.java)
@@ -199,15 +173,26 @@ class SettingsFragment : Fragment() {
         requireActivity().finish()
     }
 
+    private fun showDeleteConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Konfirmasi Hapus Akun")
+            .setMessage("Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak dapat diurungkan.")
+            .setPositiveButton("Ya") { dialog, _ ->
+                dialog.dismiss()
+                deleteUserAccount()
+            }
+            .setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     private fun deleteUserAccount() {
         val user = auth.currentUser
         val userId = user?.uid ?: return
 
-        // Step 1: Delete user data from Firestore
-        firestore.collection("users").document(userId)
-            .delete()
+        firestore.collection("users").document(userId).delete()
             .addOnSuccessListener {
-                // Step 2: Delete user from Firebase Authentication
                 user.delete()
                     .addOnSuccessListener {
                         Toast.makeText(requireContext(), "Akun berhasil dihapus.", Toast.LENGTH_SHORT).show()
@@ -231,5 +216,4 @@ class SettingsFragment : Fragment() {
     companion object {
         private const val REQUEST_STORAGE_PERMISSION = 1
     }
-
 }

@@ -8,7 +8,7 @@
     android:background="@color/cream"
     >
 
-    <!-- Existing Views -->
+    <!-- Profile Section -->
     <androidx.cardview.widget.CardView
         android:id="@+id/imageViewProfile"
         android:layout_width="70dp"
@@ -21,6 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/profileImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/rounded_image"
@@ -28,35 +29,34 @@
             android:src="@drawable/fikri" />
     </androidx.cardview.widget.CardView>
 
-    <!-- Divider Line -->
-
-    <TextView
-        android:id="@+id/current_time1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="24dp"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="09:30"
-        android:textColor="@color/light_red"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/greeting_text" />
-
+    <!-- Greeting Text -->
     <TextView
         android:id="@+id/greeting_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="120dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
         android:fontFamily="@font/montserrat_bold"
         android:text="Halo, User"
         android:textColor="@color/navy"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.762"
-        app:layout_constraintStart_toEndOf="@id/imageViewProfile"
         app:layout_constraintTop_toTopOf="@id/imageViewProfile" />
+
+    <!-- Current Time -->
+    <TextView
+        android:id="@+id/current_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="00:00"
+        android:textColor="@color/light_red"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/greeting_text" />
 
     <View
         android:id="@+id/view"
@@ -67,7 +67,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_time1" />
+        app:layout_constraintTop_toBottomOf="@id/current_time" />
 
     <LinearLayout
         android:id="@+id/calendar_layout"
@@ -271,6 +271,7 @@
         android:focusable="true"
         android:minHeight="180dp"
         android:padding="15dp"
+        android:elevation="8dp"
         app:layout_constraintTop_toBottomOf="@+id/calendar_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -392,7 +393,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:padding="16dp"
+        android:elevation="8dp"
+        android:padding="8dp"
         app:layout_constraintTop_toBottomOf="@+id/information_box"
         android:background="@drawable/rounded_box"
         tools:layout_editor_absoluteX="-3dp"

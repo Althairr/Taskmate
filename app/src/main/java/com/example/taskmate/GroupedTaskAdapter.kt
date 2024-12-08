@@ -1,6 +1,5 @@
 package com.example.taskmate
 
-import android.content.Intent
 import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,46 +8,37 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class GroupedTaskAdapter(private val items: List<ListItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            0 -> {
-                // Inflating the DateHeader layout
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_date_header, parent, false)
-                DateHeaderViewHolder(view)
-            }
-            1 -> {
-                // Inflating the TaskItem layout
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-                TaskViewHolder(view)
-            }
-            2 -> {
-                // Inflating the CategoryHeader layout
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_category_header, parent, false)
-                CategoryViewHolder(view)
-            }
-            else -> throw IllegalArgumentException("Invalid view type")
+            0 -> DateHeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_date_header, parent, false))
+            1 -> TaskViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false))
+            2 -> CategoryViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_category_header, parent, false))
+            else -> throw IllegalArgumentException("Invalid view type: $viewType")
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder) {
-            is DateHeaderViewHolder -> holder.bind(items[position] as DateHeader)
-            is CategoryViewHolder -> holder.bind(items[position] as CategoryHeader)
-            is TaskViewHolder -> holder.bind(items[position] as TaskItem)
+        when (val item = items[position]) {
+            is DateHeader -> (holder as DateHeaderViewHolder).bind(item)
+            is TaskItem -> (holder as TaskViewHolder).bind(item)
+            is CategoryHeader -> (holder as CategoryViewHolder).bind(item)
+            else -> Log.e("GroupedTaskAdapter", "Skipped invalid item at position $position: $item")
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (items[position]) {
-            is DateHeader -> 0 // Type for DateHeader
-            is CategoryHeader -> 2 // Type for CategoryHeader
-            is TaskItem -> 1 // Type for TaskItem
-            else -> throw IllegalArgumentException("Invalid view type")
+        return when (val item = items[position]) {
+            is DateHeader -> 0
+            is TaskItem -> 1
+            is CategoryHeader -> 2
+            else -> {
+                Log.e("GroupedTaskAdapter", "Invalid item type at position $position: $item")
+                -1
+            }
         }
     }
 
@@ -73,72 +63,31 @@ class GroupedTaskAdapter(private val items: List<ListItem>) : RecyclerView.Adapt
     }
 
     // ViewHolder for TaskItem
-    inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val taskName: TextView = itemView.findViewById(R.id.tv_task)
-        private val taskTime: TextView = itemView.findViewById(R.id.tv_time)
-        private val statusCheckBox: CheckBox = itemView.findViewById(R.id.statusCheckBox)
+    inner class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val taskName: TextView = view.findViewById(R.id.tv_task)
+        private val taskCheckBox: CheckBox = view.findViewById(R.id.statusCheckBox)
 
         fun bind(taskItem: TaskItem) {
             taskName.text = taskItem.name
-            taskTime.text = taskItem.time
-            statusCheckBox.isChecked = taskItem.isCompleted
-
-            // Apply strike-through line if task is completed
-            if (taskItem.isCompleted) {
-                taskName.paintFlags = taskName.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            taskCheckBox.isChecked = taskItem.isCompleted
+            taskName.paintFlags = if (taskItem.isCompleted) {
+                taskName.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             } else {
-                taskName.paintFlags = taskName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                taskName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
             }
 
-            // Set OnClickListener for task name to navigate to EditTaskActivity
-            taskName.setOnClickListener {
-                val context = itemView.context
-                val intent = Intent(context, EditTaskActivity::class.java)
-                intent.putExtra("taskId", taskItem.id) // Pass task ID to EditTaskActivity
-                context.startActivity(intent)
-            }
-
-            // Update Firestore when checkbox status changes
-            statusCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            taskCheckBox.setOnCheckedChangeListener(null)
+            taskCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 taskItem.isCompleted = isChecked
                 updateTaskStatusInFirestore(taskItem)
-
-                // Apply strike-through line when checked
-                if (isChecked) {
-                    taskName.paintFlags = taskName.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                } else {
-                    taskName.paintFlags = taskName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                }
             }
         }
-    }
 
-
-    private fun updateTaskStatusInFirestore(taskItem: TaskItem) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null) {
-            Log.e("HomeFragment", "User not authenticated")
-            return
+        private fun updateTaskStatusInFirestore(taskItem: TaskItem) {
+            FirebaseFirestore.getInstance().collection("tasks").document(taskItem.id)
+                .update("status", taskItem.isCompleted)
+                .addOnSuccessListener { Log.d("GroupedTaskAdapter", "Task updated successfully") }
+                .addOnFailureListener { Log.e("GroupedTaskAdapter", "Failed to update task", it) }
         }
-
-        val db = FirebaseFirestore.getInstance().collection("tasks")
-        db.whereEqualTo("userId", userId)
-            .whereEqualTo("taskName", taskItem.name) // Match the task by name
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                for (document in querySnapshot.documents) {
-                    db.document(document.id)
-                        .update("status", taskItem.isCompleted)
-                        .addOnSuccessListener {
-                            Log.d("HomeFragment", "Task status updated successfully.")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("HomeFragment", "Failed to update task status.", e)
-                        }
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("HomeFragment", "Failed to fetch task for update.", e)
-            }
     }
 }

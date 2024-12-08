@@ -13,11 +13,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskmate.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class KategoriActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var categoryAdapter: KategoriAdapter
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private var categories: MutableList<String> = mutableListOf()
+    private var categoryIds: MutableList<String> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,15 +39,33 @@ class KategoriActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recycler_view_categories)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Sample categories
-        val categories = listOf("Machine Learning", "RTI", "Data Science", "AI", "TEST")
+        fetchCategories()
+    }
 
-        // Set up adapter with the list of categories
-        categoryAdapter = KategoriAdapter(categories) { view, position ->
-            showPopup(view, position)
-        }
+    private fun fetchCategories() {
+        val userId = auth.currentUser?.uid ?: return
 
-        recyclerView.adapter = categoryAdapter
+        firestore.collection("categories")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                categories.clear()
+                categoryIds.clear()
+
+                for (document in querySnapshot) {
+                    categories.add(document.getString("name") ?: "Unnamed Category")
+                    categoryIds.add(document.id)
+                }
+
+                // Update RecyclerView with fetched categories
+                categoryAdapter = KategoriAdapter(categories) { view, position ->
+                    showPopup(view, position)
+                }
+                recyclerView.adapter = categoryAdapter
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to fetch categories.", Toast.LENGTH_SHORT).show()
+            }
     }
 
     // Function to show popup menu
@@ -52,12 +76,11 @@ class KategoriActivity : AppCompatActivity() {
         popup.setOnMenuItemClickListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
                 R.id.action_edit -> {
-                    // Show the custom dialog
-                    showEditDialog()
+                    showEditDialog(position)
                     true
                 }
                 R.id.action_delete -> {
-                    Toast.makeText(this, "Hapus clicked for item $position", Toast.LENGTH_SHORT).show()
+                    deleteCategory(position)
                     true
                 }
                 else -> false
@@ -66,23 +89,60 @@ class KategoriActivity : AppCompatActivity() {
         popup.show()
     }
 
-    private fun showEditDialog() {
+    private fun showEditDialog(position: Int) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_ubah_kategori, null)
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
 
-        // Handle button clicks in the dialog
+        val editText = dialogView.findViewById<EditText>(R.id.edit_kategori)
+        editText.setText(categories[position]) // Set current category name
+
         dialogView.findViewById<Button>(R.id.batal_button).setOnClickListener {
             dialog.dismiss()
         }
 
         dialogView.findViewById<Button>(R.id.selesai_button).setOnClickListener {
-            val newCategory = dialogView.findViewById<EditText>(R.id.edit_kategori).text.toString()
-            Toast.makeText(this, "Category updated to: $newCategory", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
+            val newCategory = editText.text.toString().trim()
+            if (newCategory.isNotEmpty()) {
+                updateCategory(position, newCategory)
+                dialog.dismiss()
+            } else {
+                Toast.makeText(this, "Category name cannot be empty.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         dialog.show()
+    }
+
+    private fun updateCategory(position: Int, newCategory: String) {
+        val categoryId = categoryIds[position]
+
+        firestore.collection("categories").document(categoryId)
+            .update("name", newCategory)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Category updated.", Toast.LENGTH_SHORT).show()
+                categories[position] = newCategory
+                categoryAdapter.notifyItemChanged(position)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to update category.", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun deleteCategory(position: Int) {
+        val categoryId = categoryIds[position]
+
+        firestore.collection("categories").document(categoryId)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(this, "Category deleted.", Toast.LENGTH_SHORT).show()
+                categories.removeAt(position)
+                categoryIds.removeAt(position)
+                categoryAdapter.notifyItemRemoved(position)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to delete category.", Toast.LENGTH_SHORT).show()
+            }
     }
 }
