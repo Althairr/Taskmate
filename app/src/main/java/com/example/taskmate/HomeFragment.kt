@@ -13,10 +13,13 @@
     import android.view.ViewGroup
     import android.widget.ImageView
     import android.widget.TextView
+    import android.widget.Toast
     import androidx.core.content.ContextCompat
     import androidx.fragment.app.Fragment
+    import androidx.lifecycle.Lifecycle
     import androidx.recyclerview.widget.LinearLayoutManager
     import androidx.recyclerview.widget.RecyclerView
+    import com.bumptech.glide.Glide
     import com.google.firebase.auth.FirebaseAuth
     import com.google.firebase.firestore.FirebaseFirestore
     import com.example.taskmate.databinding.FragmentHomeBinding
@@ -35,6 +38,13 @@
         private lateinit var dateViews: List<TextView>
         private lateinit var dayViews: List<TextView>
         private var currentCarouselPosition = 0
+
+        private val firestore = FirebaseFirestore.getInstance()
+        private val auth = FirebaseAuth.getInstance()
+
+        companion object {
+            private const val REQUEST_STORAGE_PERMISSION = 1
+        }
 
         // Carousel data
         private val carouselItems = listOf(
@@ -80,7 +90,7 @@
             savedInstanceState: Bundle?
         ): View {
             binding = FragmentHomeBinding.inflate(inflater, container, false)
-            currentTimeTextView = binding.currentTime1
+            currentTimeTextView = binding.currentTime
 
             // Initialize date and day views
             initializeDateAndDayViews()
@@ -93,6 +103,9 @@
 
             // Start time updates
             handler.post(updateTimeRunnable)
+
+            // Fetch and display user profile data
+            displayUserProfile()
 
             // Setup date display
             setupDateDisplay()
@@ -109,6 +122,62 @@
 
             // Fetch tasks from Firebase
             fetchTasksFromFirebase()
+        }
+
+        override fun onResume() {
+            super.onResume()
+            // Re-fetch user profile when the fragment becomes visible
+            displayUserProfile()
+        }
+        private fun displayUserProfile() {
+            val userId = auth.currentUser?.uid
+            if (userId == null) {
+                // Default greeting and image
+                binding.greetingText.text = "Halo, User"
+                binding.imageViewProfile.findViewById<ImageView>(R.id.profileImageView)
+                    .setImageResource(R.drawable.fikri) // Default image
+                return
+            }
+            // Fetch user data from Firestore
+            firestore.collection("users").document(userId).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val username = document.getString("username") ?: "User"
+                        val profileImageUrl = document.getString("profileImageUrl")
+                        // Update greeting text
+                        binding.greetingText.text = "Halo, $username"
+                        // Load profile image using Glide
+                        profileImageUrl?.let {
+                            loadProfileImage(it)
+                        } ?: run {
+                            // Use default image if no profileImageUrl is found
+                            binding.imageViewProfile.findViewById<ImageView>(R.id.profileImageView)
+                                .setImageResource(R.drawable.fikri)
+                        }
+                    } else {
+                        setDefaultProfile()
+                    }
+                }
+                .addOnFailureListener {
+                    setDefaultProfile()
+                    Toast.makeText(requireContext(), "Gagal memuat data pengguna.", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        private fun loadProfileImage(imageUrl: String) {
+            val profileImageView = binding.imageViewProfile.findViewById<ImageView>(R.id.profileImageView)
+            if (isAdded && viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.fikri) // Placeholder for loading state
+                    .into(profileImageView)
+            }
+        }
+
+        private fun setDefaultProfile() {
+            binding.greetingText.text = "Halo, User"
+            binding.imageViewProfile.findViewById<ImageView>(R.id.profileImageView)
+                .setImageResource(R.drawable.fikri) // Default image
         }
 
         private fun setupCarousel() {
@@ -158,6 +227,7 @@
         private fun resetCarouselTimer() {
             handler.removeCallbacks(carouselRunnable)
             handler.postDelayed(carouselRunnable, 5000)
+            handler.removeCallbacksAndMessages(null)
         }
 
         private fun updateCarousel() {
@@ -276,7 +346,7 @@
         private fun updateTime() {
             val calendar = Calendar.getInstance()
             val currentTime = DateFormat.format("HH:mm", calendar).toString()
-            binding.currentTime1.text = currentTime
+            binding.currentTime.text = currentTime
         }
 
         private fun fetchTasksFromFirebase() {

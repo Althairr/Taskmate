@@ -89,4 +89,6 @@ dependencies {
     // App Check
     implementation ("com.google.firebase:firebase-appcheck-playintegrity:17.0.1")
 
+    // Notification
+    implementation("androidx.work:work-runtime:2.8.0")
 }

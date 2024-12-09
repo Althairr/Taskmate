@@ -13,7 +13,7 @@
         android:layout_width="255dp"
         android:layout_height="222dp"
         android:layout_marginTop="200dp"
-        android:src="@drawable/taskmate_logo"
+        android:src="@drawable/logo_taskmate"
         app:layout_constraintBottom_toTopOf="@+id/splash_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

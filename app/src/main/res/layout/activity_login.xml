@@ -23,10 +23,10 @@
 
         <ImageView
             android:id="@+id/img_top"
-            android:layout_width="249dp"
-            android:layout_height="219dp"
+            android:layout_width="164dp"
+            android:layout_height="175dp"
             android:layout_gravity="center"
-            android:src="@drawable/logo_login" />
+            android:src="@drawable/logo_taskmate" />
 
         <TextView
             android:layout_width="match_parent"

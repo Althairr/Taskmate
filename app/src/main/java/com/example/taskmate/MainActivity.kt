@@ -1,11 +1,19 @@
 package com.example.taskmate
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.widget.Button
+import android.os.PowerManager
+import android.provider.Settings
+import android.util.Log
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.taskmate.worker.NotificationService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
@@ -23,6 +31,34 @@ class MainActivity : AppCompatActivity() {
         firebaseAppCheck.installAppCheckProviderFactory(
             PlayIntegrityAppCheckProviderFactory.getInstance()
         )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                Log.d("MainActivity", "Requesting POST_NOTIFICATIONS permission.")
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+            } else {
+                Log.d("MainActivity", "POST_NOTIFICATIONS permission already granted.")
+                startNotificationService()
+            }
+        } else {
+            startNotificationService()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                Log.d("MainActivity", "Requesting to ignore battery optimizations.")
+                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = Uri.parse("package:$packageName")
+                }
+                startActivity(intent)
+            } else {
+                Log.d("MainActivity", "Battery optimizations already ignored.")
+            }
+        }
+
+        // Periksa optimisasi baterai
+        checkBatteryOptimization()
 
         // Setup Bottom Navigation and button to navigate to task
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav)
@@ -93,11 +129,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                Log.d("MainActivity", "Requesting to ignore battery optimizations.")
+                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = Uri.parse("package:$packageName")
+                }
+                startActivity(intent)
+            } else {
+                Log.d("MainActivity", "Battery optimizations already ignored.")
+            }
+        }
+    }
+
     // Helper function to replace the current fragment
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.nav_host_fragment, fragment)
             .commit()
+    }
+
+    private fun startNotificationService() {
+        val serviceIntent = Intent(this, NotificationService::class.java)
+        Log.d("MainActivity", "Starting NotificationService...")
+        ContextCompat.startForegroundService(this, serviceIntent)
+        Log.d("MainActivity", "NotificationService started.")
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("MainActivity", "POST_NOTIFICATIONS permission granted.")
+                startNotificationService()
+            } else {
+                Log.e("MainActivity", "POST_NOTIFICATIONS permission denied.")
+            }
+        }
     }
 
     // Function to save the last visited page
