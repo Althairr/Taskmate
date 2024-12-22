@@ -131,8 +131,11 @@ class KategoriActivity : AppCompatActivity() {
     }
 
     private fun deleteCategory(position: Int) {
+        // Kategori yang akan dihapus
         val categoryId = categoryIds[position]
+        val categoryName = categories[position]
 
+        // Hapus kategori dari Firestore
         firestore.collection("categories").document(categoryId)
             .delete()
             .addOnSuccessListener {
@@ -140,6 +143,27 @@ class KategoriActivity : AppCompatActivity() {
                 categories.removeAt(position)
                 categoryIds.removeAt(position)
                 categoryAdapter.notifyItemRemoved(position)
+
+                // Update semua tasks yang terkait kategori ini
+                firestore.collection("tasks")
+                    .whereEqualTo("category", categoryName)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        for (document in querySnapshot) {
+                            // Perbarui setiap task menjadi kategori default
+                            firestore.collection("tasks").document(document.id)
+                                .update("category", "Tidak dikategorikan")
+                                .addOnSuccessListener {
+                                    Toast.makeText(this, "Related tasks updated.", Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(this, "Failed to update tasks.", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Failed to fetch related tasks.", Toast.LENGTH_SHORT).show()
+                    }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to delete category.", Toast.LENGTH_SHORT).show()
