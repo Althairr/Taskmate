@@ -122,10 +122,44 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
-            android:id="@+id/taskContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp" />
+            android:padding="16dp">
+
+            <!-- Passed Deadline Section -->
+            <TextView
+                android:id="@+id/passedDeadlineTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tasks Past Deadline"
+                android:textColor="@color/navy"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/passedDeadlineContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:paddingBottom="16dp" />
+
+            <!-- Upcoming Tasks Section -->
+            <TextView
+                android:id="@+id/upcomingTasksTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upcoming Tasks"
+                android:textColor="@color/navy"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/upcomingTasksContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

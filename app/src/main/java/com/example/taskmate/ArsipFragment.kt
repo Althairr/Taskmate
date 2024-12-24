@@ -43,7 +43,6 @@ class ArsipFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Start time updates
         handler.post(updateTimeRunnable)
 
         currentUserId = auth.currentUser?.uid ?: ""
@@ -106,14 +105,13 @@ class ArsipFragment : Fragment() {
             Glide.with(this)
                 .load(imageUrl)
                 .placeholder(R.drawable.fikri)
-                .into(binding.imageViewProfile.findViewById(R.id.profileImageView))
+                .into(binding.profileImageView)
         }
     }
 
     private fun setDefaultProfile() {
         binding.greetingText.text = "Halo, User"
-        binding.imageViewProfile.findViewById<ImageView>(R.id.profileImageView)
-            .setImageResource(R.drawable.fikri)
+        binding.profileImageView.setImageResource(R.drawable.fikri)
     }
 
     private fun fetchCategories() {
@@ -157,21 +155,55 @@ class ArsipFragment : Fragment() {
         query.get().addOnSuccessListener { documents ->
             if (!isAdded) return@addOnSuccessListener
 
-            binding.taskContainer.removeAllViews()
+            val currentTime = System.currentTimeMillis()
 
-            if (documents.isEmpty) {
-                binding.emptyTaskMessage.visibility = View.VISIBLE
-            } else {
-                binding.emptyTaskMessage.visibility = View.GONE
-                for (document in documents) {
-                    val taskName = document.getString("taskName") ?: "Unnamed Task"
-                    val categoryName = document.getString("category") ?: "No Category"
-                    val deadline = document.getString("deadlineAndTime") ?: "No Deadline"
+            val passedDeadlineTasks = mutableListOf<View>()
+            val upcomingTasks = mutableListOf<View>()
 
-                    val taskView = createTaskView(taskName, categoryName, deadline)
-                    binding.taskContainer.addView(taskView)
+            for (document in documents) {
+                val taskName = document.getString("taskName") ?: "Unnamed Task"
+                val categoryName = document.getString("category") ?: "No Category"
+                val deadlineStr = document.getString("deadlineAndTime") ?: "No Deadline"
+
+                val taskView = createTaskView(taskName, categoryName, deadlineStr)
+
+                val deadlineMillis = parseDeadline(deadlineStr)
+                if (deadlineMillis != null && deadlineMillis < currentTime) {
+                    passedDeadlineTasks.add(taskView)
+                } else {
+                    upcomingTasks.add(taskView)
                 }
             }
+
+            binding.passedDeadlineContainer.removeAllViews()
+            binding.upcomingTasksContainer.removeAllViews()
+
+            if (passedDeadlineTasks.isNotEmpty()) {
+                binding.passedDeadlineTitle.visibility = View.VISIBLE
+                binding.passedDeadlineContainer.visibility = View.VISIBLE
+                passedDeadlineTasks.forEach { binding.passedDeadlineContainer.addView(it) }
+            } else {
+                binding.passedDeadlineTitle.visibility = View.GONE
+                binding.passedDeadlineContainer.visibility = View.GONE
+            }
+
+            if (upcomingTasks.isNotEmpty()) {
+                binding.upcomingTasksTitle.visibility = View.VISIBLE
+                binding.upcomingTasksContainer.visibility = View.VISIBLE
+                upcomingTasks.forEach { binding.upcomingTasksContainer.addView(it) }
+            } else {
+                binding.upcomingTasksTitle.visibility = View.GONE
+                binding.upcomingTasksContainer.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun parseDeadline(deadlineStr: String): Long? {
+        return try {
+            val dateFormat = java.text.SimpleDateFormat("HH:mm, d MMMM yyyy", java.util.Locale.getDefault())
+            dateFormat.parse(deadlineStr)?.time
+        } catch (e: Exception) {
+            null
         }
     }
 
@@ -218,8 +250,9 @@ class ArsipFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        categoryListener?.remove() // Remove Firebase listener to avoid memory leaks
-        binding.taskContainer.removeAllViews()
+        categoryListener?.remove()
+        binding.passedDeadlineContainer.removeAllViews()
+        binding.upcomingTasksContainer.removeAllViews()
         handler.removeCallbacks(updateTimeRunnable)
     }
 }
