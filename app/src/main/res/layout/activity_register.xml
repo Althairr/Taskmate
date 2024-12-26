@@ -27,6 +27,7 @@
             android:fontFamily="@font/montserrat_bold"
             android:text="DAFTAR"
             android:textSize="32sp"
+            android:textColor="@color/navy"
             android:layout_marginBottom="40dp"
             />
 
@@ -35,6 +36,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
             android:text="@string/email"
+            android:textColor="@color/navy"
             android:textSize="16sp" />
 
         <EditText
@@ -55,6 +57,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
             android:text="Nama Pengguna"
+            android:textColor="@color/navy"
             android:textSize="16sp" />
 
         <EditText
@@ -75,6 +78,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
             android:text="@string/kata_sandi"
+            android:textColor="@color/navy"
             android:textSize="16sp" />
 
         <EditText

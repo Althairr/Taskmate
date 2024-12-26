@@ -1,6 +1,8 @@
 package com.example.taskmate
 
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,16 +15,21 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.marginTop
+import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.bumptech.glide.Glide
 import com.example.taskmate.databinding.FragmentArsipBinding
 import com.example.taskmate.kategori.KategoriActivity
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.android.material.card.MaterialCardView
 import com.google.firebase.firestore.ListenerRegistration
 import java.util.Calendar
+import androidx.core.content.res.ResourcesCompat
 
 class ArsipFragment : Fragment() {
 
@@ -32,6 +39,9 @@ class ArsipFragment : Fragment() {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var currentUserId: String
     private var categoryListener: ListenerRegistration? = null
+    private var activeCategory: String? = "Semua"
+    val Int.dp: Int
+        get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -122,11 +132,13 @@ class ArsipFragment : Fragment() {
 
                 val categories = snapshots.documents.mapNotNull { it.getString("name") }.toMutableList()
 
-                if (!categories.contains("All")) categories.add(0, "All")
+                if (!categories.contains("Semua")) categories.add(0, "Semua")
 
                 binding.categoryButtonLayout.removeAllViews()
                 categories.forEach { addCategoryButton(it) }
 
+                // Set default active category to "All"
+                setActiveCategory("Semua")
                 filterTasksByCategory(null)
             }
     }
@@ -136,12 +148,45 @@ class ArsipFragment : Fragment() {
             val button = Button(ctx).apply {
                 text = category
                 setOnClickListener {
-                    filterTasksByCategory(if (category == "All") null else category)
+                    setActiveCategory(category)
+                    filterTasksByCategory(if (category == "Semua") null else category)
                 }
+                updateButtonStyle(this, category == activeCategory)
+
+                // Add spacing and ensure proper size
+                val layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(8, 0, 8, 0) // Add horizontal spacing
+                }
+                this.layoutParams = layoutParams
             }
             binding.categoryButtonLayout.addView(button)
         }
     }
+
+    private fun setActiveCategory(category: String) {
+        activeCategory = category
+        for (i in 0 until binding.categoryButtonLayout.childCount) {
+            val button = binding.categoryButtonLayout.getChildAt(i) as Button
+            val isActive = button.text == category
+            updateButtonStyle(button, isActive)
+        }
+    }
+
+    private fun updateButtonStyle(button: Button, isActive: Boolean) {
+        val ctx = requireContext()
+        button.setPadding(32, 16, 32, 16) // Add padding inside the button
+        if (isActive) {
+            button.setBackgroundResource(R.drawable.rounded_button)
+            button.setTextColor(ContextCompat.getColor(ctx, R.color.cream))
+        } else {
+            button.setBackgroundResource(R.drawable.rounded_outline_button)
+            button.setTextColor(ContextCompat.getColor(ctx, R.color.light_red))
+        }
+    }
+
 
     private fun filterTasksByCategory(category: String?) {
         val query = if (category == null) {
@@ -165,10 +210,12 @@ class ArsipFragment : Fragment() {
                 val categoryName = document.getString("category") ?: "No Category"
                 val deadlineStr = document.getString("deadlineAndTime") ?: "No Deadline"
 
-                val taskView = createTaskView(taskName, categoryName, deadlineStr)
-
                 val deadlineMillis = parseDeadline(deadlineStr)
-                if (deadlineMillis != null && deadlineMillis < currentTime) {
+                val isPassedDeadline = deadlineMillis != null && deadlineMillis < currentTime
+
+                val taskView = createTaskView(taskName, categoryName, deadlineStr, isPassedDeadline)
+
+                if (isPassedDeadline) {
                     passedDeadlineTasks.add(taskView)
                 } else {
                     upcomingTasks.add(taskView)
@@ -198,6 +245,7 @@ class ArsipFragment : Fragment() {
         }
     }
 
+
     private fun parseDeadline(deadlineStr: String): Long? {
         return try {
             val dateFormat = java.text.SimpleDateFormat("HH:mm, d MMMM yyyy", java.util.Locale.getDefault())
@@ -207,7 +255,7 @@ class ArsipFragment : Fragment() {
         }
     }
 
-    private fun createTaskView(taskName: String, category: String, deadline: String): View {
+    private fun createTaskView(taskName: String, category: String, deadline: String, isPassedDeadline: Boolean): View {
         val safeContext = context ?: return View(requireActivity())
 
         val cardView = MaterialCardView(safeContext).apply {
@@ -215,36 +263,183 @@ class ArsipFragment : Fragment() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(16, 16, 16, 16)
+                setMargins(16, 16, 16, 16) // Outer margin for the card
             }
-            radius = 16f
+            radius = 50f
             cardElevation = 8f
+            setCardBackgroundColor(ContextCompat.getColor(safeContext, R.color.background_color))
+            setContentPadding(8.dp, 8.dp, 8.dp, 8.dp) // Padding inside the card
         }
 
-        val taskLayout = LinearLayout(safeContext).apply {
-            orientation = LinearLayout.VERTICAL
+        val constraintLayout = ConstraintLayout(safeContext).apply {
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
             setPadding(16, 16, 16, 16)
         }
 
-        taskLayout.addView(TextView(safeContext).apply {
-            text = "Task: $taskName"
-            textSize = 16f
-            setPadding(0, 0, 0, 8)
-        })
+        // Decide the color based on the group
+        val textColor = if (isPassedDeadline) R.color.gray else R.color.navy
+        val barColor = if (isPassedDeadline) R.color.gray else R.color.light_red
 
-        taskLayout.addView(TextView(safeContext).apply {
-            text = "Category: $category"
+        // Fonts from res/font
+        val montserratRegular = ResourcesCompat.getFont(safeContext, R.font.montserrat_regular)
+        val montserratSemiBold = ResourcesCompat.getFont(safeContext, R.font.montserrat_semibold)
+        val montserratBold = ResourcesCompat.getFont(safeContext, R.font.montserrat_bold)
+
+        // Extract the time (HH:mm) and date (d MMMM yyyy) from the deadline
+        val dateFormat = java.text.SimpleDateFormat("HH:mm, d MMMM yyyy", java.util.Locale.getDefault())
+        val outputTimeFormat = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+        val outputDateFormat = java.text.SimpleDateFormat("d MMMM yyyy", java.util.Locale.getDefault())
+        var deadlineTime = ""
+        var deadlineDate = ""
+        try {
+            val parsedDate = dateFormat.parse(deadline)
+            deadlineTime = outputTimeFormat.format(parsedDate!!)
+            deadlineDate = outputDateFormat.format(parsedDate)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        // Deadline text (on top of category name)
+        val deadlineTextView = TextView(safeContext).apply {
+            id = View.generateViewId()
+            text = deadlineDate
             textSize = 14f
-            setPadding(0, 0, 0, 8)
-        })
+            setTypeface(montserratBold)
+            setTextColor(ContextCompat.getColor(safeContext, textColor))
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                marginStart = 16.dp
+            }
+        }
 
-        taskLayout.addView(TextView(safeContext).apply {
-            text = "Deadline: $deadline"
+        // Red (or Gray) vertical bar
+        val verticalBar = View(safeContext).apply {
+            id = View.generateViewId()
+            layoutParams = ConstraintLayout.LayoutParams(4.dp, 40.dp).apply {
+                topToBottom = deadlineTextView.id
+                startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+                marginEnd = 16.dp
+                topMargin = 8.dp
+            }
+            setBackgroundColor(ContextCompat.getColor(safeContext, barColor))
+        }
+
+        // Category name (below deadline)
+        val categoryTextView = TextView(safeContext).apply {
+            id = View.generateViewId()
+            text = category
+            textSize = 18f
+            setTypeface(montserratSemiBold)
+            setTextColor(ContextCompat.getColor(safeContext, textColor))
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topToBottom = deadlineTextView.id
+                startToEnd = verticalBar.id
+                topMargin = 12.dp
+                setPadding(20, 0, 0, 0)
+            }
+        }
+
+        // LinearLayout for tasks
+        val taskContainer = LinearLayout(safeContext).apply {
+            id = View.generateViewId()
+            orientation = LinearLayout.VERTICAL
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topToBottom = categoryTextView.id
+                startToStart = categoryTextView.id
+                topMargin = 16.dp
+                setPadding(24, 0, 0, 0)
+            }
+        }
+
+        // Create task layout for each task
+        val taskLayout = ConstraintLayout(safeContext).apply {
+            id = View.generateViewId()
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 8.dp, 0, 8.dp)
+            }
+        }
+
+        val radioDot = View(safeContext).apply {
+            id = View.generateViewId()
+            layoutParams = ConstraintLayout.LayoutParams(10.dp, 10.dp).apply {
+                startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+                topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+                marginEnd = 8.dp
+            }
+            // Use radio_uncheck for gray (passed deadline) tasks, otherwise use radio_check
+            background = ContextCompat.getDrawable(
+                safeContext,
+                if (isPassedDeadline) R.drawable.radio_uncheck else R.drawable.radio_check
+            )
+        }
+
+        val taskNameTextView = TextView(safeContext).apply {
+            id = View.generateViewId()
+            text = taskName
             textSize = 14f
-            setPadding(0, 0, 0, 8)
-        })
+            setTypeface(montserratRegular)
+            setTextColor(ContextCompat.getColor(safeContext, textColor))
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                startToEnd = radioDot.id
+                topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+                setPadding(16, 0, 0, 0)
+            }
+        }
 
-        cardView.addView(taskLayout)
+        val taskTimeTextView = TextView(safeContext).apply {
+            id = View.generateViewId()
+            text = deadlineTime // Display the extracted time
+            textSize = 14f
+            setTypeface(montserratBold)
+            setTextColor(ContextCompat.getColor(safeContext, textColor))
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+                topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+                marginEnd = 8.dp
+            }
+        }
+
+        // Add views to taskLayout
+        taskLayout.addView(radioDot)
+        taskLayout.addView(taskNameTextView)
+        taskLayout.addView(taskTimeTextView)
+
+        // Add taskLayout to taskContainer
+        taskContainer.addView(taskLayout)
+
+        // Add all elements to ConstraintLayout
+        constraintLayout.addView(verticalBar)
+        constraintLayout.addView(deadlineTextView)
+        constraintLayout.addView(categoryTextView)
+        constraintLayout.addView(taskContainer)
+
+        // Add ConstraintLayout to the cardView
+        cardView.addView(constraintLayout)
+
         return cardView
     }
 
