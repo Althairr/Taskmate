@@ -53,7 +53,7 @@ class KategoriActivity : AppCompatActivity() {
                 categoryIds.clear()
 
                 for (document in querySnapshot) {
-                    categories.add(document.getString("name") ?: "Unnamed Category")
+                    categories.add(document.getString("name") ?: "Tidak dikategorikan")
                     categoryIds.add(document.id)
                 }
 
@@ -64,7 +64,7 @@ class KategoriActivity : AppCompatActivity() {
                 recyclerView.adapter = categoryAdapter
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to fetch categories.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Gagal mengambil kategori.", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -108,7 +108,7 @@ class KategoriActivity : AppCompatActivity() {
                 updateCategory(position, newCategory)
                 dialog.dismiss()
             } else {
-                Toast.makeText(this, "Category name cannot be empty.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Kategori tidak boleh kosong.", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -121,12 +121,12 @@ class KategoriActivity : AppCompatActivity() {
         firestore.collection("categories").document(categoryId)
             .update("name", newCategory)
             .addOnSuccessListener {
-                Toast.makeText(this, "Category updated.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Kategori diperbarui!.", Toast.LENGTH_SHORT).show()
                 categories[position] = newCategory
                 categoryAdapter.notifyItemChanged(position)
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to update category.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Gagal memperbarui kategori.", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -139,7 +139,7 @@ class KategoriActivity : AppCompatActivity() {
         firestore.collection("categories").document(categoryId)
             .delete()
             .addOnSuccessListener {
-                Toast.makeText(this, "Category deleted.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Kategori berhasil dihapus!", Toast.LENGTH_SHORT).show()
                 categories.removeAt(position)
                 categoryIds.removeAt(position)
                 categoryAdapter.notifyItemRemoved(position)
@@ -154,19 +154,19 @@ class KategoriActivity : AppCompatActivity() {
                             firestore.collection("tasks").document(document.id)
                                 .update("category", "Tidak dikategorikan")
                                 .addOnSuccessListener {
-                                    Toast.makeText(this, "Related tasks updated.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "Tugas diperbarui.", Toast.LENGTH_SHORT).show()
                                 }
                                 .addOnFailureListener {
-                                    Toast.makeText(this, "Failed to update tasks.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "Gagal memperbarui tugas.", Toast.LENGTH_SHORT).show()
                                 }
                         }
                     }
                     .addOnFailureListener {
-                        Toast.makeText(this, "Failed to fetch related tasks.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Gagal memfetch tugas.", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to delete category.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Gagal menghapus kategori.", Toast.LENGTH_SHORT).show()
             }
     }
 }

@@ -73,8 +73,8 @@ class TaskActivity : AppCompatActivity() {
                 }
 
                 // Pastikan "Add Category" selalu ada di posisi terakhir
-                if (!categories.contains("Add Category")) {
-                    categories.add("Add Category")
+                if (!categories.contains("Tambahkan Kategori")) {
+                    categories.add("Tambahkan Kategori")
                 }
                 setupCategorySpinner()
             }
@@ -82,7 +82,7 @@ class TaskActivity : AppCompatActivity() {
                 Log.e("Firestore", "Error getting documents: ", exception)
                 categories.clear()
                 categories.add("Tidak dikategorikan")
-                categories.add("Add Category")
+                categories.add("Tambahkan Kategori")
                 setupCategorySpinner()
             }
     }
@@ -100,7 +100,7 @@ class TaskActivity : AppCompatActivity() {
 
         categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: android.view.View, position: Int, id: Long) {
-                if (categories[position] == "Add Category") {
+                if (categories[position] == "Tambahkan Kategori") {
                     showAddCategoryDialog(adapter)
                 }
             }
@@ -111,19 +111,19 @@ class TaskActivity : AppCompatActivity() {
 
     private fun showAddCategoryDialog(adapter: ArrayAdapter<String>) {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Add Category")
+        builder.setTitle("Tambahkan Kategori")
 
         val input = EditText(this)
-        input.hint = "Enter category name"
+        input.hint = "Masukkan nama kategori"
         builder.setView(input)
 
-        builder.setPositiveButton("Add") { _, _ ->
+        builder.setPositiveButton("Tambah") { _, _ ->
             val newCategory = input.text.toString().trim()
             if (newCategory.isNotEmpty()) {
                 addCategoryToFirestore(newCategory, adapter)
             }
         }
-        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+        builder.setNegativeButton("Batal") { dialog, _ -> dialog.cancel() }
         builder.show()
     }
 
@@ -142,7 +142,7 @@ class TaskActivity : AppCompatActivity() {
         firestore.collection("categories")
             .add(categoryData)
             .addOnSuccessListener {
-                categories.add(categories.size - 1, categoryName) // Tambahkan sebelum "Add Category"
+                categories.add(categories.size - 1, categoryName) // Tambahkan sebelum "Tambahkan Kategori"
                 adapter.notifyDataSetChanged()
                 Toast.makeText(this, "Kategori berhasil ditambahkan", Toast.LENGTH_SHORT).show()
             }

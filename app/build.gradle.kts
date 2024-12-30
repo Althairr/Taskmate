@@ -91,4 +91,6 @@ dependencies {
 
     // Notification
     implementation("androidx.work:work-runtime:2.8.0")
+
+    implementation ("com.google.android.gms:play-services-auth:20.5.0")
 }
