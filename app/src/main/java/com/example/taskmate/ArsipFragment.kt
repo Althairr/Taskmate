@@ -204,26 +204,29 @@ class ArsipFragment : Fragment() {
 
             val passedDeadlineTasks = mutableListOf<View>()
             val upcomingTasks = mutableListOf<View>()
+            val completedTasks = mutableListOf<View>()
 
             for (document in documents) {
-                val taskName = document.getString("taskName") ?: "Unnamed Task"
-                val categoryName = document.getString("category") ?: "No Category"
-                val deadlineStr = document.getString("deadlineAndTime") ?: "No Deadline"
+                val taskName = document.getString("taskName") ?: "Tanpa Nama"
+                val categoryName = document.getString("category") ?: "Tidak dikategorikan"
+                val deadlineStr = document.getString("deadlineAndTime") ?: "Tidak ada waktu tenggat"
+                val status = document.getBoolean("status") ?: false
 
                 val deadlineMillis = parseDeadline(deadlineStr)
                 val isPassedDeadline = deadlineMillis != null && deadlineMillis < currentTime
 
                 val taskView = createTaskView(taskName, categoryName, deadlineStr, isPassedDeadline)
 
-                if (isPassedDeadline) {
-                    passedDeadlineTasks.add(taskView)
-                } else {
-                    upcomingTasks.add(taskView)
+                when {
+                    status -> completedTasks.add(taskView) // Task selesai
+                    isPassedDeadline -> passedDeadlineTasks.add(taskView) // Task melewati tenggat waktu
+                    else -> upcomingTasks.add(taskView) // Task akan datang
                 }
             }
 
             binding.passedDeadlineContainer.removeAllViews()
             binding.upcomingTasksContainer.removeAllViews()
+            binding.completedTasksContainer.removeAllViews()
 
             if (passedDeadlineTasks.isNotEmpty()) {
                 binding.passedDeadlineTitle.visibility = View.VISIBLE
@@ -242,9 +245,17 @@ class ArsipFragment : Fragment() {
                 binding.upcomingTasksTitle.visibility = View.GONE
                 binding.upcomingTasksContainer.visibility = View.GONE
             }
+
+            if (completedTasks.isNotEmpty()) {
+                binding.completedTasksTitle.visibility = View.VISIBLE
+                binding.completedTasksContainer.visibility = View.VISIBLE
+                completedTasks.forEach { binding.completedTasksContainer.addView(it) }
+            } else {
+                binding.completedTasksTitle.visibility = View.GONE
+                binding.completedTasksContainer.visibility = View.GONE
+            }
         }
     }
-
 
     private fun parseDeadline(deadlineStr: String): Long? {
         return try {

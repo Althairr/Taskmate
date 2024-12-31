@@ -105,7 +105,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="No tasks available"
+        android:text="Belum ada tugas!"
         android:textColor="@color/navy"
         android:textSize="16sp"
         android:visibility="gone"
@@ -159,9 +159,31 @@
                 android:id="@+id/upcomingTasksContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:paddingBottom="16dp"
+                />
+
+            <!-- Completed Tasks Section -->
+            <TextView
+                android:id="@+id/completedTasksTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sudah Selesai"
+                android:textColor="@color/navy"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/completedTasksContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:paddingBottom="16dp"
+                />
         </LinearLayout>
     </ScrollView>
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"

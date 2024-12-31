@@ -5,12 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/cream">
 
-    <!-- View for pink rectangle at the top (header) -->
-    <!-- TextView for the month-year title inside the pink header -->
-
-    <!-- Calendar View with rounded corners below the header -->
-
-    <!-- Section di bawah CalendarView -->
+    <!-- CalendarView -->
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="390dp"
@@ -29,10 +24,10 @@
 
     <!-- TextView for Empty Message -->
     <TextView
-        android:layout_marginTop="20dp"
         android:id="@+id/emptyMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/montserrat_semibold"
         android:text="Tidak ada tugas untuk tanggal ini."
         android:textAlignment="center"
@@ -42,17 +37,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendarView" />
 
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/calenderTaskRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_margin="20dp"
         android:padding="16dp"
+        android:background="@drawable/rounded_box"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/calendarView"
-        android:background="@drawable/rounded_box"
-        tools:layout_editor_absoluteX="-3dp"
-        tools:listitem="@layout/item_calendar_task"
-        />
-    <!-- end of task box -->
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_calendar_task" />
 </androidx.constraintlayout.widget.ConstraintLayout>
