@@ -28,7 +28,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-
         binding.tvToRegister.setOnClickListener{
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
@@ -86,12 +85,18 @@ class LoginActivity : AppCompatActivity() {
                 if (it.isSuccessful)
                 {
                     Toast.makeText(this, "Berhasil Login!", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
+                    navigateToMainActivity()
                 } else {
                     Toast.makeText(this, "${it.exception?.message}", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
+    }
+
+    private fun navigateToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

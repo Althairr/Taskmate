@@ -28,6 +28,12 @@
     import java.text.SimpleDateFormat
     import java.util.Date
     import java.util.Locale
+    import androidx.work.Data
+    import androidx.work.OneTimeWorkRequestBuilder
+    import androidx.work.WorkManager
+    import java.util.*
+    import java.util.concurrent.TimeUnit
+    import com.example.taskmate.worker.NotificationWorker
 
     class HomeFragment : Fragment() {
         private lateinit var binding: FragmentHomeBinding
@@ -374,6 +380,16 @@
                     val taskMap = mutableMapOf<String, MutableMap<String, MutableList<TaskItem>>>()
 
                     for (taskDocument in querySnapshot.documents) {
+                        val taskData = taskDocument.data
+
+                        if (taskData != null) {
+                            // Ensure to schedule notification for tasks that are not past the deadline
+                            val deadlineAndTime = taskDocument.getString("deadlineAndTime")
+                            if (deadlineAndTime != null && !isTaskPastDeadline(deadlineAndTime)) {
+                                context?.let { scheduleNotification(it, taskData) }
+                            }
+                        }
+
                         val taskId = taskDocument.id // Task ID
                         val deadlineAndTime = taskDocument.getString("deadlineAndTime")
                         val taskName = taskDocument.getString("taskName")
@@ -383,8 +399,7 @@
                         if (deadlineAndTime != null && taskName != null && category != null) {
                             val (time, date) = splitDate(deadlineAndTime)
 
-                            // Check if the task is already past the deadline
-                            if (isTaskPastDeadline(date)) {
+                            if (isTaskPastDeadline(deadlineAndTime)) {
                                 // Skip tasks that are past the deadline
                                 continue
                             }
@@ -434,17 +449,80 @@
             }
         }
 
+        fun scheduleNotification(context: Context, taskData: Map<String, Any>) {
+            val taskName = taskData["taskName"] as? String
+            val category = taskData["category"] as? String
+            val time = taskData["time"] as? String
+            val timeDeadline = taskData["deadlineAndTime"] as? String
+            val deadlineDate = taskData["deadlineDate"] as? String
+
+            // Check if any required data is missing
+            if (taskName == null || category == null || time == null || timeDeadline == null || deadlineDate == null) {
+                Log.e("HomeFragment", "Missing data in task: $taskData")
+                return
+            }
+
+            // Parse deadlineDate and calculate delay
+            val dateFormat = SimpleDateFormat("d MMMM yyyy", Locale.getDefault())
+            val deadline = dateFormat.parse(deadlineDate)
+
+            // If the deadline has passed, don't send a notification
+            if (deadline != null && System.currentTimeMillis() > deadline.time) {
+                Log.d("HomeFragment", "Task $taskName has passed its deadline, not scheduling notification.")
+                return
+            }
+
+            val notificationDelayMillis = calculateDelay(time, deadline)
+
+            // Prepare input data for the worker
+            val inputData = Data.Builder()
+                .putString("taskName", taskName)
+                .putString("category", category)
+                .putString("time", time)
+                .putString("deadlineAndTime", timeDeadline)
+                .build()
+
+            // Schedule the notification
+            val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
+                .setInitialDelay(notificationDelayMillis, TimeUnit.MILLISECONDS)
+                .setInputData(inputData)
+                .build()
+
+            WorkManager.getInstance(context).enqueue(workRequest)
+        }
+
+        fun calculateDelay(time: String, deadline: Date?): Long {
+            if (deadline == null) return 0L
+
+            val calendar = Calendar.getInstance()
+            calendar.time = deadline
+
+            when (time) {
+                "1 hari" -> calendar.add(Calendar.DAY_OF_MONTH, -1)
+                "3 hari" -> calendar.add(Calendar.DAY_OF_MONTH, -3)
+                "5 hari" -> calendar.add(Calendar.DAY_OF_MONTH, -5)
+                "7 hari" -> calendar.add(Calendar.DAY_OF_MONTH, -7)
+            }
+
+            val currentTimeMillis = System.currentTimeMillis()
+            return calendar.timeInMillis - currentTimeMillis
+        }
+
         private fun isTaskPastDeadline(deadline: String): Boolean {
+            // Assuming the format of deadline is "HH:mm, d MMMM yyyy" (e.g., 01:00, 1 January 2025)
             val dateFormat = SimpleDateFormat("HH:mm, d MMMM yyyy", Locale.getDefault())
+
             return try {
-                val taskDeadline = dateFormat.parse(deadline) // Parse tanggal dari string
-                val currentDate = Date() // Tanggal saat ini
-                taskDeadline != null && taskDeadline.before(currentDate) // Bandingkan
+                val taskDeadline = dateFormat.parse(deadline) // Parse the string into a Date object
+                val currentDate = Date() // Get the current date and time
+
+                taskDeadline != null && taskDeadline.before(currentDate) // Check if the task is past deadline
             } catch (e: Exception) {
                 e.printStackTrace()
-                false // Jika parsing gagal, anggap tidak melewati batas waktu
+                false // If parsing fails, assume the task is not past the deadline
             }
         }
+
 
 
         private fun splitDate(deadlineAndTime: String): Pair<String, String> {
