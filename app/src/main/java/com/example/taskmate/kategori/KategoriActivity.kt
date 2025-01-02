@@ -117,13 +117,39 @@ class KategoriActivity : AppCompatActivity() {
 
     private fun updateCategory(position: Int, newCategory: String) {
         val categoryId = categoryIds[position]
+        val oldCategoryName = categories[position]
+        val userId = auth.currentUser?.uid ?: return // Get the current user's ID
 
+        // Update the category name in the categories collection
         firestore.collection("categories").document(categoryId)
             .update("name", newCategory)
             .addOnSuccessListener {
-                Toast.makeText(this, "Kategori diperbarui!.", Toast.LENGTH_SHORT).show()
-                categories[position] = newCategory
-                categoryAdapter.notifyItemChanged(position)
+                // Update all tasks with the old category name and matching userId to the new category name
+                firestore.collection("tasks")
+                    .whereEqualTo("category", oldCategoryName)
+                    .whereEqualTo("userId", userId) // Ensure the tasks belong to the logged-in user
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val batch = firestore.batch() // Use a batch to perform updates in bulk
+                        for (document in querySnapshot) {
+                            val taskRef = firestore.collection("tasks").document(document.id)
+                            batch.update(taskRef, "category", newCategory)
+                        }
+
+                        // Commit the batch
+                        batch.commit()
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "Kategori dan tugas terkait berhasil diperbarui.", Toast.LENGTH_SHORT).show()
+                                categories[position] = newCategory
+                                categoryAdapter.notifyItemChanged(position)
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this, "Gagal memperbarui tugas.", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Gagal memfetch tugas.", Toast.LENGTH_SHORT).show()
+                    }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Gagal memperbarui kategori.", Toast.LENGTH_SHORT).show()

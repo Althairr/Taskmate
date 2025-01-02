@@ -91,8 +91,8 @@ class EditTaskActivity : AppCompatActivity() {
                     categories.add(0, "Tidak dikategorikan")
                 }
 
-                if (!categories.contains("Add Category")) {
-                    categories.add("Add Category")
+                if (!categories.contains("Tambahkan kategori")) {
+                    categories.add("Tambahkan Kategori")
                 }
 
                 setupCategorySpinner()
@@ -101,7 +101,7 @@ class EditTaskActivity : AppCompatActivity() {
                 Log.e("Firestore", "Error getting documents: ", exception)
                 categories.clear()
                 categories.add("Tidak dikategorikan")
-                categories.add("Add Category")
+                categories.add("Tambahkan Kategori")
                 setupCategorySpinner()
             }
     }
@@ -118,7 +118,7 @@ class EditTaskActivity : AppCompatActivity() {
 
         categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: android.view.View, position: Int, id: Long) {
-                if (categories[position] == "Add Category") {
+                if (categories[position] == "Tambahkan Kategori") {
                     showAddCategoryDialog(adapter)
                 }
             }
@@ -129,10 +129,10 @@ class EditTaskActivity : AppCompatActivity() {
 
     private fun showAddCategoryDialog(adapter: ArrayAdapter<String>) {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Add Category")
+        builder.setTitle("Tambahkan Kategori")
 
         val input = EditText(this)
-        input.hint = "Enter category name"
+        input.hint = "Masukkan nama kategori"
         builder.setView(input)
 
         builder.setPositiveButton("Add") { _, _ ->
@@ -141,7 +141,7 @@ class EditTaskActivity : AppCompatActivity() {
                 addCategoryToFirestore(newCategory, adapter)
             }
         }
-        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+        builder.setNegativeButton("Batal") { dialog, _ -> dialog.cancel() }
         builder.show()
     }
 
